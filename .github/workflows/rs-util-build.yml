@@ -1,11 +1,11 @@
-name: Go-Util-Build
+name: rs-chdiff-build
 
 on:
   push
 
 jobs:
   build-and-release:
-    name: Build And Release
+    name: build and release
     runs-on: ubuntu-latest
 
     steps:
@@ -14,7 +14,7 @@ jobs:
       #   with:
       #     go-version: "1.23.0"
 
-      - name: Checkout
+      - name: checkout
         uses: actions/checkout@v3.5.3
 
       # - name: Setup Environment
@@ -24,6 +24,6 @@ jobs:
       #     echo 'EOF' >>$GITHUB_ENV
       #     echo 'GOPROXY=direct' >>$GITHUB_ENV
 
-      - name: Build
+      - name: build
         run: build.sh
           # go run github.com/soerenkoehler/go-util-build@main --artifact-name=chdiff
