@@ -9,21 +9,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # - name: Setup Go environment
-      #   uses: actions/setup-go@v4.0.1
-      #   with:
-      #     go-version: "1.23.0"
-
       - name: checkout
         uses: actions/checkout@v3.5.3
 
-      # - name: Setup Environment
-      #   run: |
-      #     echo 'GITHUB_CONTEXT<<EOF' >>$GITHUB_ENV
-      #     echo '${{toJson(github)}}' >>$GITHUB_ENV
-      #     echo 'EOF' >>$GITHUB_ENV
-      #     echo 'GOPROXY=direct' >>$GITHUB_ENV
+      - name: update toolchain
+        run: rustup update
 
       - name: build
-        run: pwd; ls -al; stat build.sh; ./build.sh
-          # go run github.com/soerenkoehler/go-util-build@main --artifact-name=chdiff
+        run: ./build.sh
