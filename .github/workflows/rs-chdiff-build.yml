@@ -12,11 +12,8 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3.5.3
 
-      - name: update toolchain
-        run: rustup target list --installed
-
-      - name: update toolchain
-        run: rustup update
+      - name: install mingw-w64
+        run: apt install mingw-w64
 
       - name: update toolchain
         run: rustup target list --installed
