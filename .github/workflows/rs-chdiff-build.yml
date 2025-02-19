@@ -13,7 +13,13 @@ jobs:
         uses: actions/checkout@v3.5.3
 
       - name: update toolchain
+        run: rustup target list --installed
+
+      - name: update toolchain
         run: rustup update
+
+      - name: update toolchain
+        run: rustup target list --installed
 
       - name: build
         run: ./build.sh
