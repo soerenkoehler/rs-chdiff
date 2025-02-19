@@ -25,5 +25,5 @@ jobs:
       #     echo 'GOPROXY=direct' >>$GITHUB_ENV
 
       - name: build
-        run: build.sh
+        run: pwd; ls -al; stat build.sh; build.sh
           # go run github.com/soerenkoehler/go-util-build@main --artifact-name=chdiff
