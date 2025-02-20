@@ -7,8 +7,15 @@ BINARIES=$(find target \
     \( -name "rs-chdiff" -or -name "rs-chdiff.exe" \) )
 
 mkdir -p $DISTDIR
-for FILE in $BINARIES; do
-    ARCH=$(basename $(dirname $(dirname $FILE)))
-    ZIP="$DISTDIR/chdiff-$(date -I)-$ARCH.zip"
-    zip -9j "$ZIP" "$FILE"
+for SRC in $BINARIES; do
+    ARCH=$(basename $(dirname $(dirname $SRC)))
+    DST="$DISTDIR/chdiff-$(date -I)-$ARCH"
+    case $ARCH
+    *windows*)
+        DST -9j "$DST.zip" "$SRC"
+        ;;
+    *)
+        tar -c "$SRC" | gzip -9 >"$DST.tar.gz"
+        ;;
+    esac
 done
