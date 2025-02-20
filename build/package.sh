@@ -10,7 +10,7 @@ mkdir -p $DISTDIR
 for SRC in $BINARIES; do
     ARCH=$(basename $(dirname $(dirname $SRC)))
     DST="$DISTDIR/chdiff-$(date -I)-$ARCH"
-    case $ARCH
+    case $ARCH in
     *windows*)
         DST -9j "$DST.zip" "$SRC"
         ;;
