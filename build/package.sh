@@ -15,8 +15,7 @@ for SRC in $BINARIES; do
         zip -v9j "$DST.zip" "$SRC"
         ;;
     *)
-        tar -v \
-            -c "$DST.tar" \
+        tar -vcf "$DST.tar" \
             -C $(dirname "$SRC") $(basename $SRC)
         gzip -v9 "$DST.tar"
         ;;
