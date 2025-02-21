@@ -15,7 +15,7 @@ for SRC in $BINARIES; do
         zip -9j "$DST.zip" "$SRC"
         ;;
     *)
-        tar -c "$SRC" | gzip -9 >"$DST.tar.gz"
+        tar -c $(dirname "$SRC") $(basename $SRC) | gzip -9 >"$DST.tar.gz"
         ;;
     esac
 done
