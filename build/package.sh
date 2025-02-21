@@ -12,10 +12,13 @@ for SRC in $BINARIES; do
     DST="$DISTDIR/chdiff-$(date -I)-$ARCH"
     case $ARCH in
     *windows*)
-        zip -9jv "$DST.zip" "$SRC"
+        zip -v9j "$DST.zip" "$SRC"
         ;;
     *)
-        tar -cvC $(dirname "$SRC") $(basename $SRC) | gzip -9v >"$DST.tar.gz"
+        tar -v \
+            -c "$DST.tar" \
+            -C $(dirname "$SRC") $(basename $SRC)
+        gzip -v9 "$DST.tar"
         ;;
     esac
 done
