@@ -1,0 +1,30 @@
+name: rs-chdiff-build
+
+on:
+  push
+
+jobs:
+  build-and-release:
+    name: build and release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3.5.3
+
+      - name: "install mingw-w64"
+        run: sudo apt install mingw-w64
+
+      - name: "update rust toolchain"
+        run: rustup target list --installed
+
+      - name: "compile"
+        run: ./build/compile.sh
+
+      - name: "package"
+        run: ./build/package.sh
+
+      - name: "create release"
+        run: ./build/release.sh
+        env:
+          GH_TOKEN: ${{ github.token }}
