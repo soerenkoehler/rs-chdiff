@@ -12,7 +12,7 @@ for SRC in $BINARIES; do
     DST="$DISTDIR/chdiff-$(date -I)-$ARCH"
     case $ARCH in
     *windows*)
-        DST -9j "$DST.zip" "$SRC"
+        zip -9j "$DST.zip" "$SRC"
         ;;
     *)
         tar -c "$SRC" | gzip -9 >"$DST.tar.gz"
