@@ -11,7 +11,7 @@ fn create_defaultpath() -> Result<(), CargoError> {
         .success()
         .stdout(
             contains("create (wip)") //
-                .and(contains("path: \"..\"")),
+                .and(contains("path: \".\"")),
         );
 
     Ok(())
