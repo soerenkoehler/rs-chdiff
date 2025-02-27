@@ -53,7 +53,7 @@ pub(crate) fn parse() {
         }
         None => {
             if cli.version {
-                println!("{} - {}", crate_name!(), crate_version!())
+                println!("{} {}", crate_name!(), crate_version!())
             }
         }
     }
