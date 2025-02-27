@@ -18,6 +18,9 @@ jobs:
       - name: "update rust toolchain"
         run: rustup target list --installed
 
+      - name: "test"
+        run: ./build/test.sh
+
       - name: "compile"
         run: ./build/compile.sh
 
