@@ -1,48 +1,71 @@
-use assert_cmd::{cargo::CargoError, prelude::*}; // Add methods on commands
-use predicates::prelude::{predicate::str::contains, *}; // Used for writing assertions
-use std::process::Command; // Run programs
+use assert_cmd::{
+    assert::OutputAssertExt,
+    cargo::{CargoError, CommandCargoExt},
+};
+use clap::{crate_name, crate_version};
+use predicates::prelude::{
+    predicate::{eq, str::contains}, PredicateBooleanExt
+};
+use std::process::Command;
+
+macro_rules! run_binary {
+    ( $( $a:expr ),* ) => {{
+        Command::cargo_bin("rs-chdiff")?
+        $(
+            .arg($a)
+        )*
+        .assert()
+        .success()
+    }}
+}
+
+#[test]
+fn long_help() -> Result<(), CargoError> {
+    run_binary!("help").stdout(contains(
+        "\
+Create, verify and compare hash sums on whole directory trees.
+
+
+Usage: rs-chdiff [COMMAND]
+
+Commands:
+  create  [aliases: c]
+  verify  [aliases: v]
+  backup  [aliases: b]
+  help    Print this message or the help of the given subcommand(s)
+
+Options:
+      --version  Print version
+  -h, --help     Print help",
+    ));
+
+    Ok(())
+}
 
 #[test]
 fn create_defaultpath() -> Result<(), CargoError> {
-    let mut cmd = Command::cargo_bin("rs-chdiff")?;
-
-    cmd.arg("c") //
-        .assert()
-        .success()
-        .stdout(
-            contains("create (wip)") //
-                .and(contains("path: \".\"")),
-        );
+    run_binary!("c").stdout(contains("create (wip)").and(contains("path: \".\"")));
 
     Ok(())
 }
 
 #[test]
 fn verify_defaultpath() -> Result<(), CargoError> {
-    let mut cmd = Command::cargo_bin("rs-chdiff")?;
-
-    cmd.arg("v") //
-        .assert()
-        .success()
-        .stdout(
-            contains("verify (wip)") //
-                .and(contains("path: \".\"")),
-        );
+    run_binary!("v").stdout(contains("verify (wip)").and(contains("path: \".\"")));
 
     Ok(())
 }
 
 #[test]
 fn backup_defaultpath() -> Result<(), CargoError> {
-    let mut cmd = Command::cargo_bin("rs-chdiff")?;
+    run_binary!("b").stdout(contains("backup (wip)").and(contains("path: \".\"")));
 
-    cmd.arg("b") //
-        .assert()
-        .success()
-        .stdout(
-            contains("backup (wip)") //
-                .and(contains("path: \".\"")),
-        );
+    Ok(())
+}
+
+#[test]
+fn print_version() -> Result<(), CargoError> {
+    run_binary!("--version").stdout(eq(format!("{} {}\n", crate_name!(), crate_version!())));
 
     Ok(())
 }
