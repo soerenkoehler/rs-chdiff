@@ -1,10 +1,12 @@
 use clap::{Args, Parser, Subcommand};
 
 #[derive(Parser, Debug)]
-#[command(about, version, long_version = "Y")]
+#[command(about, version, long_version = "Y", disable_version_flag = true)]
 pub(crate) struct Cli {
     #[command(subcommand)]
-    pub cmd: Command,
+    pub cmd: Option<Command>,
+    #[arg(long, help = "Print version")]
+    pub version: bool,
 }
 
 #[derive(Subcommand, Debug)]
