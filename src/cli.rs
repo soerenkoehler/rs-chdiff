@@ -4,11 +4,11 @@ use clap::{Args, Parser, Subcommand};
 #[command(about, version, long_version = "Y")]
 pub(crate) struct Cli {
     #[command(subcommand)]
-    cmd: Commands,
+    pub cmd: Command,
 }
 
 #[derive(Subcommand, Debug)]
-enum Commands {
+pub(crate) enum Command {
     #[command(visible_alias = "c")]
     Create(ArgsCreate),
     #[command(visible_alias = "v")]
@@ -18,19 +18,19 @@ enum Commands {
 }
 
 #[derive(Args, Debug)]
-struct ArgsCreate {
+pub(crate) struct ArgsCreate {
     #[arg(default_value = ".")]
     path: String,
 }
 
 #[derive(Args, Debug)]
-struct ArgsVerify {
+pub(crate) struct ArgsVerify {
     #[arg(default_value = ".")]
     path: String,
 }
 
 #[derive(Args, Debug)]
-struct ArgsBackup {
+pub(crate) struct ArgsBackup {
     #[arg(default_value = ".")]
     path: String,
 }
