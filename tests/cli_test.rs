@@ -43,6 +43,13 @@ Options:
 }
 
 #[test]
+fn verify_is_default_cmd()->Result<(), CargoError> {
+    run_binary!().stdout(contains("verify (wip)").and(contains("path: \".\"")));
+
+    Ok(())
+}
+
+#[test]
 fn create_defaultpath() -> Result<(), CargoError> {
     run_binary!("c").stdout(contains("create (wip)").and(contains("path: \".\"")));
 

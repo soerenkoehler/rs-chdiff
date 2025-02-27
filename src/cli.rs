@@ -54,6 +54,10 @@ pub(crate) fn parse() {
         None => {
             if cli.version {
                 println!("{} {}", crate_name!(), crate_version!())
+            } else {
+                verify::run(ArgsVerify {
+                    path: ".".to_string(),
+                });
             }
         }
     }
