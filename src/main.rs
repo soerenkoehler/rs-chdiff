@@ -1,7 +1,6 @@
-mod backup;
 mod cli;
-mod create;
-mod verify;
+mod digest;
+mod commands;
 
 pub fn main() {
     cli::parse();

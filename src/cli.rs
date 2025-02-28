@@ -1,6 +1,6 @@
 use clap::{Args, Parser, Subcommand, crate_name, crate_version};
 
-use crate::{backup, create, verify};
+use crate::commands::execute;
 
 #[derive(Parser, Debug)]
 #[command(about, version, long_version = "Y", disable_version_flag = true)]
@@ -41,24 +41,12 @@ pub(crate) struct ArgsBackup {
 
 pub(crate) fn parse() {
     let cli = Cli::parse();
-    match cli.cmd {
-        Some(Command::Create(args)) => {
-            create::run(args);
-        }
-        Some(Command::Verify(args)) => {
-            verify::run(args);
-        }
-        Some(Command::Backup(args)) => {
-            backup::run(args);
-        }
-        None => {
-            if cli.version {
-                println!("{} {}", crate_name!(), crate_version!())
-            } else {
-                verify::run(ArgsVerify {
-                    path: ".".to_string(),
-                });
-            }
-        }
+
+    if cli.cmd.is_none() && cli.version {
+        println!("{} {}", crate_name!(), crate_version!())
+    } else {
+        execute(cli.cmd.unwrap_or(Command::Verify(ArgsVerify {
+            path: ".".to_string(),
+        })));
     }
 }
