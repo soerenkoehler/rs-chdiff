@@ -14,3 +14,33 @@ Options:
       --version  Print version
   -h, --help     Print help
 "#;
+
+pub const HELP_TEXT_CREATE: &str =
+r#"Usage: rs-chdiff create [PATH]
+
+Arguments:
+  [PATH]  [default: .]
+
+Options:
+  -h, --help  Print help
+"#;
+
+pub const HELP_TEXT_VERIFY: &str =
+r#"Usage: rs-chdiff verify [PATH]
+
+Arguments:
+  [PATH]  [default: .]
+
+Options:
+  -h, --help  Print help
+"#;
+
+pub const HELP_TEXT_BACKUP: &str =
+r#"Usage: rs-chdiff backup [PATH]
+
+Arguments:
+  [PATH]  [default: .]
+
+Options:
+  -h, --help  Print help
+"#;
