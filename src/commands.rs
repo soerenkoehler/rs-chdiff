@@ -1,8 +1,8 @@
-use crate::cli::Command;
-
 mod backup;
 mod create;
 mod verify;
+
+use crate::cli::Command;
 
 pub(crate) fn execute(cmd: Command) {
     match cmd {

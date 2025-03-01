@@ -1,10 +1,13 @@
+mod cli_test_data;
+
 use assert_cmd::{
     assert::OutputAssertExt,
     cargo::{CargoError, CommandCargoExt},
 };
 use clap::{crate_name, crate_version};
 use predicates::prelude::{
-    predicate::{eq, str::contains}, PredicateBooleanExt
+    PredicateBooleanExt,
+    predicate::{eq, str::contains},
 };
 use std::process::Command;
 
@@ -21,29 +24,13 @@ macro_rules! run_binary {
 
 #[test]
 fn long_help() -> Result<(), CargoError> {
-    run_binary!("help").stdout(contains(
-        "\
-Create, verify and compare hash sums on whole directory trees.
-
-
-Usage: rs-chdiff [COMMAND]
-
-Commands:
-  create  [aliases: c]
-  verify  [aliases: v]
-  backup  [aliases: b]
-  help    Print this message or the help of the given subcommand(s)
-
-Options:
-      --version  Print version
-  -h, --help     Print help",
-    ));
+    run_binary!("help").stdout(contains(cli_test_data::HELP_TEXT));
 
     Ok(())
 }
 
 #[test]
-fn verify_is_default_cmd()->Result<(), CargoError> {
+fn verify_is_default_cmd() -> Result<(), CargoError> {
     run_binary!().stdout(contains("verify (wip)").and(contains("path: \".\"")));
 
     Ok(())
