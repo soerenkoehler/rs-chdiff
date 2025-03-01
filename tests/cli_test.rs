@@ -1,38 +1,10 @@
-mod cli_test_data;
+mod common;
+mod data;
 
-use assert_cmd::{
-    assert::OutputAssertExt,
-    cargo::{CargoError, CommandCargoExt},
-};
 use clap::{crate_name, crate_version};
-use predicates::prelude::{
-    PredicateBooleanExt,
-    predicate::{eq, str::contains},
-};
-use std::process::Command;
+use predicates::{ord::eq, prelude::PredicateBooleanExt, str::contains};
 
-macro_rules! run_binary {
-    ( $( $a:expr ),* ) => {{
-        Command::cargo_bin("rs-chdiff")?
-        $(
-            .arg($a)
-        )*
-        .assert()
-        .success()
-    }}
-}
-
-macro_rules! assert_stdout {
-    ($n:ident,$p:expr,$($a:expr),*) => {
-        #[test]
-        fn $n() -> Result<(), CargoError> {
-            run_binary!($($a),*).stdout($p);
-            Ok(())
-        }
-    };
-}
-
-assert_stdout!(long_help, contains(cli_test_data::HELP_TEXT), "help");
+assert_stdout!(long_help, contains(data::HELP_TEXT), "help");
 assert_stdout!(
     verify_is_default_cmd,
     contains("verify (wip)").and(contains("path: \".\"")),
