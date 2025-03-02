@@ -1,5 +1,3 @@
-use std::path::{Path, PathBuf};
-
 use clap::{Args, Parser, Subcommand, crate_name, crate_version};
 
 use crate::commands::execute;
