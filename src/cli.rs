@@ -1,3 +1,5 @@
+use std::path::{Path, PathBuf};
+
 use clap::{Args, Parser, Subcommand, crate_name, crate_version};
 
 use crate::commands::execute;
@@ -24,19 +26,19 @@ pub(crate) enum Command {
 #[derive(Args, Debug)]
 pub(crate) struct ArgsCreate {
     #[arg(default_value = ".")]
-    path: String,
+    pub path: String,
 }
 
 #[derive(Args, Debug)]
 pub(crate) struct ArgsVerify {
     #[arg(default_value = ".")]
-    path: String,
+    pub path: String,
 }
 
 #[derive(Args, Debug)]
 pub(crate) struct ArgsBackup {
     #[arg(default_value = ".")]
-    path: String,
+    pub path: String,
 }
 
 pub(crate) fn parse() {
