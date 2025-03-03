@@ -1,3 +1,4 @@
+// FIXME set working directory
 #[macro_export]
 macro_rules! run_binary {
     ( $( $a:expr ),* ) => {
