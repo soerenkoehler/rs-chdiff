@@ -3,8 +3,12 @@ use std::path::Path;
 use crate::cli::ArgsVerify;
 use crate::digest::Digest;
 
-pub(crate) fn run(args: ArgsVerify) {
-    println!("verify (wip) {:?}", args);
+use super::ExecuteCommand;
 
-    let _digest = Digest::from_dir(Path::new(&args.path));
+impl ExecuteCommand for ArgsVerify {
+    fn execute(&self) {
+        println!("verify (wip) {:?}", self);
+
+        let _digest = Digest::from_dir(Path::new(&self.path));
+    }
 }

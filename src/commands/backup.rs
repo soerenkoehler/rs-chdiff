@@ -1,5 +1,9 @@
 use crate::cli::ArgsBackup;
 
-pub(crate) fn run(args: ArgsBackup) {
-    println!("backup (wip) {:?}", args)
+use super::ExecuteCommand;
+
+impl ExecuteCommand for ArgsBackup {
+    fn execute(&self) {
+        println!("backup (wip) {:?}", self)
+    }
 }

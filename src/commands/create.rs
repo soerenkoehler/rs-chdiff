@@ -1,6 +1,9 @@
 use crate::cli::ArgsCreate;
 
-pub(crate) fn run(args: ArgsCreate) {
-    println!("create (wip) {:?}", args)
+use super::ExecuteCommand;
 
+impl ExecuteCommand for ArgsCreate {
+    fn execute(&self) {
+        println!("create (wip) {:?}", self)
+    }
 }

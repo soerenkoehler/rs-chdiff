@@ -22,6 +22,12 @@ pub(crate) enum Command {
 }
 
 #[derive(Args, Debug)]
+pub(crate) struct ArgsBackup {
+    #[arg(default_value = ".")]
+    pub path: String,
+}
+
+#[derive(Args, Debug)]
 pub(crate) struct ArgsCreate {
     #[arg(default_value = ".")]
     pub path: String,
@@ -29,12 +35,6 @@ pub(crate) struct ArgsCreate {
 
 #[derive(Args, Debug)]
 pub(crate) struct ArgsVerify {
-    #[arg(default_value = ".")]
-    pub path: String,
-}
-
-#[derive(Args, Debug)]
-pub(crate) struct ArgsBackup {
     #[arg(default_value = ".")]
     pub path: String,
 }
