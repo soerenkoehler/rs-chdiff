@@ -1,3 +1,6 @@
+#[cfg(test)]
+mod cli_test;
+
 use std::env::ArgsOs;
 
 use clap::{Args, CommandFactory, Parser, Subcommand, crate_name, crate_version};

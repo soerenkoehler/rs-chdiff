@@ -44,3 +44,27 @@ Arguments:
 Options:
   -h, --help  Print help
 "#;
+
+pub const ERROR_MISSING_CMD: &str =
+r#"error: Command required
+
+Usage: rs-chdiff [COMMAND]
+
+For more information, try '--help'.
+"#;
+
+pub const ERROR_EMPTY_CMD: &str =
+r#"error: unrecognized subcommand ''
+
+Usage: rs-chdiff [COMMAND]
+
+For more information, try '--help'.
+"#;
+
+pub const ERROR_WRONG_CMD: &str =
+r#"error: unrecognized subcommand 'unknown'
+
+Usage: rs-chdiff [COMMAND]
+
+For more information, try '--help'.
+"#;
