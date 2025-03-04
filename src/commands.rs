@@ -2,6 +2,9 @@ mod backup;
 mod create;
 mod verify;
 
+#[cfg(test)]
+mod commands_test;
+
 use crate::cli::Command;
 
 trait ExecuteCommand {
@@ -9,16 +12,15 @@ trait ExecuteCommand {
 }
 
 pub(crate) fn execute(cmd: Command) {
-    handleCommand!(cmd, Backup, Create, Verify);
     match cmd {
-    Command::Create(args) => {
-        args.execute();
-    }
-    Command::Verify(args) => {
-        args.execute();
-    }
-    Command::Backup(args) => {
-        args.execute();
-    }
+        Command::Create(args) => {
+            args.execute();
+        }
+        Command::Verify(args) => {
+            args.execute();
+        }
+        Command::Backup(args) => {
+            args.execute();
+        }
     }
 }

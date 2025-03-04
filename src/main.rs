@@ -1,7 +1,9 @@
+use std::env::args_os;
+
 mod cli;
-mod digest;
 mod commands;
+mod digest;
 
 pub fn main() {
-    cli::parse();
+    cli::parse(args_os());
 }

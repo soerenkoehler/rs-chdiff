@@ -1,4 +1,6 @@
-use clap::{Args, Parser, Subcommand, crate_name, crate_version};
+use std::env::ArgsOs;
+
+use clap::{Args, CommandFactory, Parser, Subcommand, crate_name, crate_version};
 
 use crate::commands::execute;
 
@@ -39,14 +41,19 @@ pub(crate) struct ArgsVerify {
     pub path: String,
 }
 
-pub(crate) fn parse() {
-    let cli = Cli::parse();
+pub(crate) fn parse(args: ArgsOs) {
+    let cli = Cli::parse_from(args);
 
-    if cli.cmd.is_none() && cli.version {
-        println!("{} {}", crate_name!(), crate_version!())
-    } else {
-        execute(cli.cmd.unwrap_or(Command::Verify(ArgsVerify {
-            path: ".".to_string(),
-        })));
+    match cli.cmd {
+        Some(cmd) => execute(cmd),
+        None if cli.version => println!("{} {}", crate_name!(), crate_version!()),
+        None => {
+            Cli::command()
+                .error(
+                    clap::error::ErrorKind::MissingSubcommand,
+                    "Command required",
+                )
+                .exit();
+        }
     }
 }
