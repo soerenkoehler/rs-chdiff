@@ -3,9 +3,9 @@ use std::path::Path;
 use crate::cli::ArgsVerify;
 use crate::digest::Digest;
 
-use super::ExecuteCommand;
+use super::ExecutableCommand;
 
-impl ExecuteCommand for ArgsVerify {
+impl ExecutableCommand for ArgsVerify {
     fn execute(&self) {
         println!("verify (wip) {:?}", self);
 

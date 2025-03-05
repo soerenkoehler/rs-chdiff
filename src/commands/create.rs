@@ -1,8 +1,8 @@
 use crate::cli::ArgsCreate;
 
-use super::ExecuteCommand;
+use super::ExecutableCommand;
 
-impl ExecuteCommand for ArgsCreate {
+impl ExecutableCommand for ArgsCreate {
     fn execute(&self) {
         println!("create (wip) {:?}", self)
     }

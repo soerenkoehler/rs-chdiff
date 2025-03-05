@@ -7,7 +7,7 @@ mod commands_test;
 
 use crate::cli::Command;
 
-trait ExecuteCommand {
+trait ExecutableCommand {
     fn execute(&self);
 }
 
