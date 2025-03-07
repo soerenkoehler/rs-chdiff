@@ -1,14 +1,11 @@
-use std::path::Path;
+use super::CommandExecutor;
+use std::fmt::Debug;
 
-use crate::cli::ArgsVerify;
-use crate::digest::Digest;
+pub(crate) struct Verify {}
 
-use super::ExecutableCommand;
-
-impl ExecutableCommand for ArgsVerify {
-    fn execute(&self) {
-        println!("verify (wip) {:?}", self);
-
-        let _digest = Digest::from_dir(Path::new(&self.path));
+impl CommandExecutor for Verify {
+    fn execute<ArgsVerify: Debug>(&self, args: ArgsVerify) {
+        println!("backup (wip) {:?}", args)
+        // let _digest = Digest::from_dir(Path::new(&self.path));
     }
 }

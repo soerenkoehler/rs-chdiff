@@ -1,26 +1,12 @@
-mod backup;
-mod create;
-mod verify;
+pub(crate) mod backup;
+pub(crate) mod create;
+pub(crate) mod verify;
 
 #[cfg(test)]
 mod commands_test;
 
-use crate::cli::Command;
+use std::fmt::Debug;
 
-trait ExecutableCommand {
-    fn execute(&self);
-}
-
-pub(crate) fn execute(cmd: Command) {
-    match cmd {
-        Command::Create(args) => {
-            args.execute();
-        }
-        Command::Verify(args) => {
-            args.execute();
-        }
-        Command::Backup(args) => {
-            args.execute();
-        }
-    }
+pub(crate) trait CommandExecutor {
+    fn execute<T: Debug>(&self, args: T);
 }

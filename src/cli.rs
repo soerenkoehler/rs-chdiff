@@ -1,11 +1,9 @@
 #[cfg(test)]
 mod cli_test;
 
-use std::env::ArgsOs;
-
+use crate::commands::CommandExecutor;
 use clap::{Args, CommandFactory, Parser, Subcommand, crate_name, crate_version};
-
-use crate::commands::execute;
+use std::env::ArgsOs;
 
 #[derive(Parser, Debug)]
 #[command(about, version, long_version = "Y", disable_version_flag = true)]
@@ -44,11 +42,18 @@ pub(crate) struct ArgsVerify {
     pub path: String,
 }
 
-pub(crate) fn parse(args: ArgsOs) {
+pub(crate) fn parse(
+    args: ArgsOs,
+    backup: &impl CommandExecutor,
+    create: &impl CommandExecutor,
+    verify: &impl CommandExecutor,
+) {
     let cli = Cli::parse_from(args);
 
     match cli.cmd {
-        Some(cmd) => execute(cmd),
+        Some(Command::Backup(args)) => backup.execute(args),
+        Some(Command::Create(args)) => create.execute(args),
+        Some(Command::Verify(args)) => verify.execute(args),
         None if cli.version => println!("{} {}", crate_name!(), crate_version!()),
         None => {
             Cli::command()
