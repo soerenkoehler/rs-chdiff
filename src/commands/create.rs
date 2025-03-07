@@ -1,10 +1,10 @@
 use super::CommandExecutor;
-use std::fmt::Debug;
+use crate::cli::ArgsCreate;
 
 pub(crate) struct Create {}
 
-impl CommandExecutor for Create {
-    fn execute<ArgsCreate: Debug>(&self, args: ArgsCreate) {
+impl CommandExecutor<ArgsCreate> for Create {
+    fn execute(&self, args: ArgsCreate) {
         println!("backup (wip) {:?}", args)
     }
 }

@@ -3,10 +3,11 @@ pub(crate) mod create;
 pub(crate) mod verify;
 
 #[cfg(test)]
-mod commands_test;
+use mockall::automock;
 
 use std::fmt::Debug;
 
-pub(crate) trait CommandExecutor {
-    fn execute<T: Debug>(&self, args: T);
+#[cfg_attr(test, automock)]
+pub(crate) trait CommandExecutor<T: Debug> {
+    fn execute(&self, args: T);
 }

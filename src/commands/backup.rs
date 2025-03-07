@@ -1,10 +1,10 @@
 use super::CommandExecutor;
-use std::fmt::Debug;
+use crate::cli::ArgsBackup;
 
 pub(crate) struct Backup {}
 
-impl CommandExecutor for Backup {
-    fn execute<ArgsBackup: Debug>(&self, args: ArgsBackup) {
+impl CommandExecutor<ArgsBackup> for Backup {
+    fn execute(&self, args: ArgsBackup) {
         println!("backup (wip) {:?}", args)
     }
 }

@@ -44,9 +44,9 @@ pub(crate) struct ArgsVerify {
 
 pub(crate) fn parse(
     args: ArgsOs,
-    backup: &impl CommandExecutor,
-    create: &impl CommandExecutor,
-    verify: &impl CommandExecutor,
+    backup: &impl CommandExecutor<ArgsBackup>,
+    create: &impl CommandExecutor<ArgsCreate>,
+    verify: &impl CommandExecutor<ArgsVerify>,
 ) {
     let cli = Cli::parse_from(args);
 
