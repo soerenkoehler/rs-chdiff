@@ -1,7 +1,9 @@
 use clap::Parser;
 
+use crate::commands::MockCommandExecutor;
+
 use super::{
-    Cli,
+    ArgsBackup, ArgsCreate, ArgsVerify, Cli,
     Command::{Backup, Create, Verify},
 };
 
@@ -28,3 +30,24 @@ fn default_path_verify() {
     };
     assert_eq!(args.path, ".")
 }
+
+macro_rules! command_mapping_test {
+    ($testname:ident, $cmd:expr, $a:ident, $b:ident, $c:ident) => {
+        #[test]
+        fn $testname() {
+            let mut mock_backup = MockCommandExecutor::<ArgsBackup>::new();
+            let mut mock_create = MockCommandExecutor::<ArgsCreate>::new();
+            let mut mock_verify = MockCommandExecutor::<ArgsVerify>::new();
+
+            mock_backup.expect_execute().$a().return_const(());
+            mock_create.expect_execute().$b().return_const(());
+            mock_verify.expect_execute().$c().return_const(());
+
+            crate::cli::parse(["", $cmd], &mock_backup, &mock_create, &mock_verify);
+        }
+    };
+}
+
+command_mapping_test!(command_mapping_backup, "b", once, never, never);
+command_mapping_test!(command_mapping_create, "c", never, once, never);
+command_mapping_test!(command_mapping_verify, "v", never, never, once);
