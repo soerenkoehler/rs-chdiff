@@ -1,8 +1,8 @@
+use std::path::PathBuf;
+
 mod calculator;
 mod file;
 
-use std::collections::HashMap;
-
-pub(crate) struct Digest {
-    entries: HashMap<String, String>,
+pub(crate) struct FileList {
+    pub entries: Vec<PathBuf>,
 }

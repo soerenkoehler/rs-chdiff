@@ -2,7 +2,7 @@
 mod cli_test;
 
 use clap::{Args, CommandFactory, Parser, Subcommand, crate_name, crate_version};
-use std::ffi::OsString;
+use std::{ffi::OsString, path::PathBuf};
 
 use crate::commands::CommandExecutor;
 
@@ -28,19 +28,19 @@ pub(crate) enum Command {
 #[derive(Args, Debug)]
 pub(crate) struct ArgsBackup {
     #[arg(default_value = ".")]
-    pub path: String,
+    pub path: PathBuf,
 }
 
 #[derive(Args, Debug)]
 pub(crate) struct ArgsCreate {
     #[arg(default_value = ".")]
-    pub path: String,
+    pub path: PathBuf,
 }
 
 #[derive(Args, Debug)]
 pub(crate) struct ArgsVerify {
     #[arg(default_value = ".")]
-    pub path: String,
+    pub path: PathBuf,
 }
 
 pub(crate) fn parse<I>(

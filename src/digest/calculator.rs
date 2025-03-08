@@ -1,65 +1,42 @@
 use std::{
-    collections::HashMap,
     fs::read_dir,
-    path::{Path, PathBuf},
-    sync::mpsc::{Sender, channel},
-    thread::{self},
+    path::PathBuf,
+    sync::mpsc::{channel, Sender}, thread,
 };
 
-use super::Digest;
+use super::FileList;
 
-impl Digest {
-    pub fn from_dir(path: &Path) -> Digest {
+impl FileList {
+    pub fn from_dir(path: PathBuf) -> FileList {
         let (tx, rx) = channel();
-        let mut result: Digest = Digest {
-            entries: HashMap::new(),
+        let mut result: FileList = FileList {
+            entries: Vec::new(),
         };
 
-        let _ = Digest::process_path(tx, path);
+        Self::process_path(tx, path);
 
-        for (file, hash) in rx {
-            println!("{hash}  {}", file.strip_prefix(path).unwrap().to_str().unwrap());
-            result.entries.insert(file.to_str().unwrap().to_string(), hash);
-        }
+        rx.iter().for_each(|file| result.entries.push(file));
 
         result
     }
 
-    fn process_path(tx: Sender<(PathBuf, String)>, path: &Path) {
-        // TODO threads
-        let wait = &mut vec![];
+    fn process_path(tx: Sender<PathBuf>, path: PathBuf) {
         if path.is_dir() {
-            wait.append(&mut Self::process_dir(tx, path))
+            read_dir(path)
+                .unwrap() // TODO Handle Errors
+                .into_iter()
+                .filter_map(|entry| match entry {
+                    Ok(entry) => Some({
+                        let tx_clone: Sender<PathBuf> = tx.clone();
+                        thread::spawn(move || Self::process_path(tx_clone, entry.path()))
+                    }),
+                    _ => None,
+                })
+                .collect::<Vec<_>>()
+                .into_iter()
+                .for_each(|thread| thread.join().unwrap_or_default());
         } else if path.is_file() {
-            let tx_clone = tx.clone();
-            let path_clone = path.to_owned();
-            wait.push(thread::spawn(move || {
-                Self::process_file(tx_clone, path_clone.as_path())
-            }))
+            tx.send(path.to_owned()).unwrap();
         }
-    }
-
-    fn process_dir(tx: Sender<(PathBuf, String)>, path: &Path) -> Vec<thread::JoinHandle<()>> {
-        let mut wait = vec![];
-        // TODO handle errors from read_dir
-        read_dir(path)
-            .unwrap()
-            .into_iter()
-            .for_each(|entry| match entry {
-                Ok(entry) => {
-                    let tx_clone = tx.clone();
-                    let path_clone = entry.path();
-                    wait.push(thread::spawn(move || {
-                        Self::process_path(tx_clone, path_clone.as_path())
-                    }))
-                }
-                Err(_) => (),
-            });
-        wait
-    }
-
-    fn process_file(tx: Sender<(PathBuf, String)>, path: &Path) {
-        // TODO calculate hash
-        tx.send((path.to_owned(), "dummy".to_string())).unwrap()
     }
 }
