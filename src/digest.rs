@@ -1,8 +1,3 @@
-use std::path::PathBuf;
-
 mod calculator;
-mod file;
-
-pub(crate) struct FileList {
-    pub entries: Vec<PathBuf>,
-}
+// TODO maybe non-pub in future
+pub mod filelist;
