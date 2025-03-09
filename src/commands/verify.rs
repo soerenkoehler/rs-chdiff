@@ -8,6 +8,6 @@ impl CommandExecutor<ArgsVerify> for Verify {
         println!("verify (wip) {:?}", args);
         let mut files = FileList::from_dir(args.path).entries;
         files.sort();
-        files.into_iter().for_each(|x| println!("{:?}", x));
+        files.into_iter().for_each(|x| println!("{}", x.display()));
     }
 }

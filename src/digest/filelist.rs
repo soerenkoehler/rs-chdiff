@@ -5,9 +5,16 @@ use std::{
     thread,
 };
 
+use glob::Pattern;
+
 // TODO maybe non-pub in future
 pub(crate) struct FileList {
     pub entries: Vec<PathBuf>,
+}
+
+// TODO maybe non-pub in future
+pub(crate) struct FilterList {
+    pub patterns: Vec<Pattern>,
 }
 
 impl FileList {
