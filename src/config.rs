@@ -18,3 +18,7 @@ impl Config {
         Ok(serde_json::from_reader(BufReader::new(File::open(file)?))?)
     }
 }
+
+// TODO load from user home (win & linux)
+// TODO create default file
+// TODO add built-in excludes (".chdiff.txt")

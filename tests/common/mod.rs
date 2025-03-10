@@ -1,4 +1,4 @@
-// FIXME set working directory
+// TODO set working directory?
 #[macro_export]
 macro_rules! run_success {
     ( $( $a:expr ),* ) => {
