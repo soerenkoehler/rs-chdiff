@@ -8,6 +8,7 @@ use std::{
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
+#[serde(deny_unknown_fields)]
 pub(crate) struct Config {
     excludes: Vec<String>,
 }
