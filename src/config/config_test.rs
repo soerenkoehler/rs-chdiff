@@ -1,40 +1,38 @@
-use std::{error::Error, path::PathBuf, str::FromStr};
+use std::{path::PathBuf, str::FromStr};
 
 use super::Config;
 
-#[test]
-fn missing_config() {
-    assert!(
-        get_reading_error("tests/config_data/missing-file")
-            .downcast::<std::io::Error>()
-            .unwrap()
-            .to_string()
-            .contains("No such file or directory")
-    );
+macro_rules! assert_config_error {
+    ($n:ident,$t:ty,$m:expr,$f:expr) => {
+        #[test]
+        fn $n() {
+            Config::from_file(PathBuf::from_str($f).unwrap())
+                .unwrap_err()
+                .downcast::<$t>()
+                .unwrap()
+                .to_string()
+                .contains($m);
+        }
+    };
 }
 
-#[test]
-fn invalid_config_1() {
-    assert!(
-        get_reading_error("tests/config_data/config-invalid-1.json")
-        .downcast::<serde_json::Error>()
-        .unwrap()
-        .to_string()
-        .contains("EOF while parsing a value")
-    );
-}
+assert_config_error!(
+    missing_config,
+    std::io::Error,
+    "No such file or directory",
+    "tests/config_data/missing-file"
+);
 
-#[test]
-fn invalid_config_2() {
-    assert!(
-        get_reading_error("tests/config_data/config-invalid-2.json")
-        .downcast::<serde_json::Error>()
-        .unwrap()
-        .to_string()
-        .contains("missing field `excludes`")
-    );
-}
+assert_config_error!(
+    invalid_config_1,
+    serde_json::Error,
+    "EOF while parsing a value",
+    "tests/config_data/config-invalid-1.json"
+);
 
-fn get_reading_error(file: &str) -> Box<dyn Error> {
-    Config::from_file(PathBuf::from_str(file).unwrap()).unwrap_err()
-}
+assert_config_error!(
+    invalid_config_2,
+    serde_json::Error,
+    "missing field `excludes`",
+    "tests/config_data/config-invalid-2.json"
+);
