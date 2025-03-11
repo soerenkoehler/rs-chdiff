@@ -5,8 +5,8 @@ use std::{
     env,
     error::Error,
     fs::File,
-    io::BufReader,
-    path::{self, Path, PathBuf},
+    io::{BufReader, ErrorKind},
+    path::{Path, PathBuf},
 };
 
 use serde::{Deserialize, Serialize};
@@ -17,24 +17,48 @@ pub(crate) struct Config {
     excludes: Vec<String>,
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(unix)]
 const ENV_HOME: &str = "HOME";
 
-#[cfg(target_os = "windows")]
+#[cfg(windows)]
 const ENV_HOME: &str = "USERPROFILE";
 
 const CONFIG_FILE: &str = ".chdiff-config.json";
 
 impl Config {
     pub fn from_file(file: PathBuf) -> Result<Config, Box<dyn Error>> {
-        Ok(serde_json::from_reader(BufReader::new(File::open(file)?))?)
+        match File::open(file) {
+            Ok(file) => match serde_json::from_reader(BufReader::new(file)) {
+                Ok(cfg) => Ok(cfg),
+                Err(err) => Err(Box::new(err)),
+            },
+            Err(err) => {
+                match err.downcast::<std::io::Error>() {
+                    Ok( e) => match e.kind() {
+                        ErrorKind::NotFound => println!("file not found: {}", e.to_string()),
+                        _ => println!("{:?}", e),
+                    },
+                    Err(e) => println!("{:?}", e),
+                }
+                Err(Box::new(err))
+            }
+        }
+        // Ok(Config { excludes: vec![] })
+        //         Ok()
+        // if let Err(e) = Config::from_file(Config::get_config_path()) {
+        // match e.downcast::<Error>() {
+        //     Ok(ref e) => match e.kind() {
+        //         ErrorKind::NotFound => println!("file not found: {}", e.to_string()),
+        //         _ => println!("{:?}", e),
+        //     },
+        //     Err(e) => println!("{:?}", e),
+        // }
+        // };
     }
 
     pub fn get_config_path() -> PathBuf {
         Path::new(&env::var(ENV_HOME).unwrap()).join(CONFIG_FILE)
     }
-
-    pub fn init_config_file() {}
 }
 
 // TODO load from user home (win & linux)
@@ -42,12 +66,3 @@ impl Config {
 // TODO add built-in excludes (".chdiff.txt")
 
 // TODO detect missing config file
-// if let Err(e) = Config::from_file(Config::get_config_path()) {
-//     match e.downcast::<Error>() {
-//         Ok(ref e) => match e.kind() {
-//             ErrorKind::NotFound => println!("file not found: {}", e.to_string()),
-//             _ => println!("{:?}", e),
-//         },
-//         Err(e) => println!("{:?}", e),
-//     }
-// };
