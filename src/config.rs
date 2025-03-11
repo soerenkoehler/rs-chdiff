@@ -40,3 +40,14 @@ impl Config {
 // TODO load from user home (win & linux)
 // TODO create default file
 // TODO add built-in excludes (".chdiff.txt")
+
+// TODO detect missing config file
+// if let Err(e) = Config::from_file(Config::get_config_path()) {
+//     match e.downcast::<Error>() {
+//         Ok(ref e) => match e.kind() {
+//             ErrorKind::NotFound => println!("file not found: {}", e.to_string()),
+//             _ => println!("{:?}", e),
+//         },
+//         Err(e) => println!("{:?}", e),
+//     }
+// };
