@@ -30,30 +30,28 @@ impl Config {
         match File::open(file) {
             Ok(file) => match serde_json::from_reader(BufReader::new(file)) {
                 Ok(cfg) => Ok(cfg),
-                Err(err) => Err(Box::new(err)),
-            },
-            Err(err) => {
-                match err.downcast::<std::io::Error>() {
-                    Ok( e) => match e.kind() {
-                        ErrorKind::NotFound => println!("file not found: {}", e.to_string()),
-                        _ => println!("{:?}", e),
-                    },
-                    Err(e) => println!("{:?}", e),
+                Err(err) => {
+                    println!("{:?}", err);
+                    Err(Box::new(err))
                 }
-                Err(Box::new(err))
-            }
+            },
+            Err(err) => match err.downcast::<std::io::Error>() {
+                Ok(err) => match err.kind() {
+                    ErrorKind::NotFound => {
+                        println!("file not found: {}", err.to_string());
+                        Ok(Config { excludes: vec![] })
+                    }
+                    _ => {
+                        println!("{:?}", err);
+                        Err(Box::new(err))
+                    }
+                },
+                Err(err) => {
+                    println!("{:?}", err);
+                    Err(Box::new(err))
+                }
+            },
         }
-        // Ok(Config { excludes: vec![] })
-        //         Ok()
-        // if let Err(e) = Config::from_file(Config::get_config_path()) {
-        // match e.downcast::<Error>() {
-        //     Ok(ref e) => match e.kind() {
-        //         ErrorKind::NotFound => println!("file not found: {}", e.to_string()),
-        //         _ => println!("{:?}", e),
-        //     },
-        //     Err(e) => println!("{:?}", e),
-        // }
-        // };
     }
 
     pub fn get_config_path() -> PathBuf {
