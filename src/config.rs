@@ -3,9 +3,8 @@ mod config_test;
 
 use std::{
     env,
-    error::Error,
-    fs::File,
-    io::{BufReader, ErrorKind},
+    fs::OpenOptions,
+    io::{BufReader, BufWriter, ErrorKind},
     path::{Path, PathBuf},
 };
 
@@ -26,41 +25,37 @@ const ENV_HOME: &str = "USERPROFILE";
 const CONFIG_FILE: &str = ".chdiff-config.json";
 
 impl Config {
-    pub fn from_file(file: PathBuf) -> Result<Config, Box<dyn Error>> {
-        match File::open(file) {
+    pub fn from_file(file: &PathBuf) -> Config {
+        match OpenOptions::new().read(true).open(file) {
             Ok(file) => match serde_json::from_reader(BufReader::new(file)) {
                 Ok(cfg) => Ok(cfg),
-                Err(err) => {
-                    println!("{:?}", err);
-                    Err(Box::new(err))
-                }
+                Err(err) => Err(eprintln!("{err}")),
             },
-            Err(err) => match err.downcast::<std::io::Error>() {
-                Ok(err) => match err.kind() {
-                    ErrorKind::NotFound => {
-                        println!("file not found: {}", err.to_string());
-                        Ok(Config { excludes: vec![] })
-                    }
-                    _ => {
-                        println!("{:?}", err);
-                        Err(Box::new(err))
-                    }
-                },
-                Err(err) => {
-                    println!("{:?}", err);
-                    Err(Box::new(err))
-                }
+            Err(err) => match err.kind() {
+                ErrorKind::NotFound => Ok(Self::create_default_config(file)),
+                _ => Err(eprintln!("{err}")),
             },
         }
+        .unwrap_or(Config { excludes: vec![] })
     }
 
     pub fn get_config_path() -> PathBuf {
         Path::new(&env::var(ENV_HOME).unwrap()).join(CONFIG_FILE)
     }
+
+    fn create_default_config(file: &PathBuf) -> Config {
+        let default = Config { excludes: vec![] };
+        match OpenOptions::new().create_new(true).write(true).open(file) {
+            Ok(file) => {
+                if let Err(err) = serde_json::to_writer(BufWriter::new(file), &default) {
+                    eprintln!("{err}")
+                }
+            }
+            Err(err) => eprintln!("{err}"),
+        }
+        default
+    }
 }
 
 // TODO load from user home (win & linux)
-// TODO create default file
 // TODO add built-in excludes (".chdiff.txt")
-
-// TODO detect missing config file
