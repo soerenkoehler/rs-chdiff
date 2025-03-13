@@ -1,46 +1,18 @@
-// TODO set working directory?
-#[macro_export]
-macro_rules! run_success {
-    ( $( $a:expr ),* ) => {
-        assert_cmd::Command::cargo_bin("rs-chdiff")?
-        $(
-            .arg($a)
-        )*
-        .assert()
-        .success()
-    }
+use assert_cmd::{Command, assert::Assert, crate_name};
+use tempfile::tempdir;
+use std::path::PathBuf;
+
+#[cfg(unix)]
+const ENV_HOME: &str = "HOME";
+
+#[cfg(windows)]
+const ENV_HOME: &str = "USERPROFILE";
+
+pub fn run_in_dir(cwd: &PathBuf, args: &[&str]) -> Assert {
+    let mut cmd = Command::cargo_bin(crate_name!()).unwrap();
+    cmd.args(args).current_dir(cwd).env(ENV_HOME, cwd).assert()
 }
 
-#[macro_export]
-macro_rules! run_failure {
-    ( $( $a:expr ),* ) => {
-        assert_cmd::Command::cargo_bin("rs-chdiff")?
-        $(
-            .arg($a)
-        )*
-        .assert()
-        .failure()
-    }
-}
-
-#[macro_export]
-macro_rules! assert_stdout {
-    ($n:ident,$p:expr $(,$a:expr)*) => {
-        #[test]
-        fn $n() -> Result<(), assert_cmd::cargo::CargoError> {
-            run_success!($($a),*).stdout($p);
-            Ok(())
-        }
-    };
-}
-
-#[macro_export]
-macro_rules! assert_stderr {
-    ($n:ident,$p:expr $(,$a:expr)*) => {
-        #[test]
-        fn $n() -> Result<(), assert_cmd::cargo::CargoError> {
-            run_failure!($($a),*).stderr($p);
-            Ok(())
-        }
-    };
+pub fn run_binary(args: &[&str]) -> Assert {
+    run_in_dir(&tempdir().unwrap().into_path(), args)
 }

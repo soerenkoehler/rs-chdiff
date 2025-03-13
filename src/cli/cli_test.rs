@@ -2,12 +2,11 @@ use std::path::PathBuf;
 
 use clap::Parser;
 
-use crate::commands::MockCommandExecutor;
-
 use super::{
     ArgsBackup, ArgsCreate, ArgsVerify, Cli,
     Command::{Backup, Create, Verify},
 };
+use crate::{Dependencies, commands::MockCommandExecutor, config::Config};
 
 #[test]
 fn default_path_backup() {
@@ -45,7 +44,15 @@ macro_rules! command_mapping_test {
             mock_create.expect_execute().$b().return_const(());
             mock_verify.expect_execute().$c().return_const(());
 
-            crate::cli::parse(["", $cmd], &mock_backup, &mock_create, &mock_verify);
+            crate::cli::parse(
+                &Dependencies {
+                    backup: Box::new(mock_backup),
+                    create: Box::new(mock_create),
+                    verify: Box::new(mock_verify),
+                    config: Config::new(),
+                },
+                ["", $cmd],
+            );
         }
     };
 }

@@ -7,7 +7,9 @@ use mockall::automock;
 
 use std::fmt::Debug;
 
+use crate::Dependencies;
+
 #[cfg_attr(test, automock)]
 pub(crate) trait CommandExecutor<T: Debug> {
-    fn execute(&self, args: T);
+    fn execute(&self, deps:&Dependencies, args: T);
 }

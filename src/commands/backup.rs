@@ -1,10 +1,11 @@
+use crate::{Dependencies, cli::ArgsBackup};
+
 use super::CommandExecutor;
-use crate::cli::ArgsBackup;
 
 pub(crate) struct Backup {}
 
 impl CommandExecutor<ArgsBackup> for Backup {
-    fn execute(&self, args: ArgsBackup) {
+    fn execute(&self, _deps: &Dependencies, args: ArgsBackup) {
         println!("backup (wip) {:?}", args)
     }
 }

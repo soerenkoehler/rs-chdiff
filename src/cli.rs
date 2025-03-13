@@ -2,9 +2,9 @@
 mod cli_test;
 
 use clap::{Args, CommandFactory, Parser, Subcommand, crate_name, crate_version};
-use std::{ffi::OsString, path::PathBuf};
+use std::{env::ArgsOs, ffi::OsString, path::PathBuf};
 
-use crate::commands::CommandExecutor;
+use crate::{Dependencies, commands::CommandExecutor};
 
 #[derive(Parser, Debug)]
 #[command(about, version, long_version = "Y", disable_version_flag = true)]
@@ -43,21 +43,17 @@ pub(crate) struct ArgsVerify {
     pub path: PathBuf,
 }
 
-pub(crate) fn parse<I>(
-    args: I,
-    backup: &impl CommandExecutor<ArgsBackup>,
-    create: &impl CommandExecutor<ArgsCreate>,
-    verify: &impl CommandExecutor<ArgsVerify>,
-) where
+pub(crate) fn parse<I>(deps: &Dependencies, args: I)
+where
     I: IntoIterator,
     I::Item: Into<OsString> + Clone,
 {
     let cli = Cli::parse_from(args);
 
     match cli.cmd {
-        Some(Command::Backup(args)) => backup.execute(args),
-        Some(Command::Create(args)) => create.execute(args),
-        Some(Command::Verify(args)) => verify.execute(args),
+        Some(Command::Backup(args)) => deps.backup.execute(deps, args),
+        Some(Command::Create(args)) => deps.create.execute(deps, args),
+        Some(Command::Verify(args)) => deps.verify.execute(deps, args),
         None if cli.version => println!("{} {}", crate_name!(), crate_version!()),
         None => {
             Cli::command()
