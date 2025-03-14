@@ -1,6 +1,6 @@
 use assert_cmd::{Command, assert::Assert, crate_name};
-use tempfile::tempdir;
 use std::path::PathBuf;
+use tempfile::tempdir;
 
 #[cfg(unix)]
 const ENV_HOME: &str = "HOME";
@@ -13,6 +13,7 @@ pub fn run_in_dir(cwd: &PathBuf, args: &[&str]) -> Assert {
     cmd.args(args).current_dir(cwd).env(ENV_HOME, cwd).assert()
 }
 
+#[allow(dead_code)]
 pub fn run_binary(args: &[&str]) -> Assert {
     run_in_dir(&tempdir().unwrap().into_path(), args)
 }

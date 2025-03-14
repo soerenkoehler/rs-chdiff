@@ -2,7 +2,7 @@ mod common;
 
 use std::path::Path;
 
-use common::{run_binary, run_in_dir};
+use common::run_in_dir;
 use predicates::str::contains;
 
 #[test]

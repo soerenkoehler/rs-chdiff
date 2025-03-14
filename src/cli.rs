@@ -2,9 +2,9 @@
 mod cli_test;
 
 use clap::{Args, CommandFactory, Parser, Subcommand, crate_name, crate_version};
-use std::{env::ArgsOs, ffi::OsString, path::PathBuf};
+use std::{ffi::OsString, path::PathBuf};
 
-use crate::{Dependencies, commands::CommandExecutor};
+use crate::Dependencies;
 
 #[derive(Parser, Debug)]
 #[command(about, version, long_version = "Y", disable_version_flag = true)]
