@@ -1,5 +1,10 @@
+// #![allow(dead_code)]
+
 use assert_cmd::{Command, assert::Assert, crate_name};
-use std::path::PathBuf;
+use std::{
+    fs::copy,
+    path::PathBuf,
+};
 use tempfile::tempdir;
 
 #[cfg(unix)]
@@ -13,7 +18,27 @@ pub fn run_in_dir(cwd: &PathBuf, args: &[&str]) -> Assert {
     cmd.args(args).current_dir(cwd).env(ENV_HOME, cwd).assert()
 }
 
-#[allow(dead_code)]
 pub fn run_binary(args: &[&str]) -> Assert {
-    run_in_dir(&tempdir().unwrap().into_path(), args)
+    run_in_dir(&TempDir::new().as_path(), args)
+}
+
+pub struct TempDir {
+    path: PathBuf,
+}
+
+impl TempDir {
+    pub fn new() -> TempDir {
+        TempDir {
+            path: tempdir().unwrap().into_path(),
+        }
+    }
+
+    fn with_file(&self, src: &PathBuf, dst: &PathBuf) -> &TempDir {
+        copy(src, self.path.as_path().join(dst)).unwrap();
+        self
+    }
+
+    pub fn as_path(&self) -> PathBuf {
+        self.path.clone()
+    }
 }
