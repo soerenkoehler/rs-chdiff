@@ -3,7 +3,7 @@ mod common;
 
 use clap::{crate_name, crate_version};
 use cli_data::*;
-use common::{TempDir, run_binary, run_in_dir};
+use common::run_binary;
 use predicates::{ord::eq, str::contains};
 
 #[test]
@@ -76,8 +76,7 @@ fn help_v_flag() {
 
 #[test]
 fn version() {
-    let cwd = &TempDir::new().as_path();
-    run_in_dir(cwd, &["--version"]).success().stdout(eq(format!(
+    run_binary(&["--version"]).success().stdout(eq(format!(
         "{} {}\n",
         crate_name!(),
         crate_version!()

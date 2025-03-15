@@ -2,7 +2,7 @@ mod common;
 
 use std::path::Path;
 
-use common::run_in_dir;
+use common::{run_in_dir, run_with_config};
 use predicates::str::contains;
 
 #[test]
@@ -15,32 +15,23 @@ fn missing_config_file() {
     run_in_dir(&cwd, &["v"]).success().stdout(contains(expect));
 }
 
-// FIXME test stderr with integration test
+#[test]
+fn invalid_1_empty_file() {
+    run_with_config("tests/config_data/invalid-1.json", &["v"])
+        .success()
+        .stderr(contains("EOF while parsing a value"));
+}
 
-// assert_config_error!(
-//     missing_config_file,
-//     std::io::Error,
-//     "No such file or directory",
-//     "tests/config_data/missing-file"
-// );
+#[test]
+fn invalid_2_missing_excludes() {
+    run_with_config("tests/config_data/invalid-2.json", &["v"])
+        .success()
+        .stderr(contains("missing field `excludes`"));
+}
 
-// assert_config_error!(
-//     invalid_1_empty_file,
-//     serde_json::Error,
-//     "EOF while parsing a value",
-//     "tests/config_data/invalid-1.json"
-// );
-
-// assert_config_error!(
-//     invalid_2_missing_excludes,
-//     serde_json::Error,
-//     "missing field `excludes`",
-//     "tests/config_data/invalid-2.json"
-// );
-
-// assert_config_error!(
-//     invalid_3_unexpected_attribute,
-//     serde_json::Error,
-//     "unknown field `other-attribute`",
-//     "tests/config_data/invalid-3.json"
-// );
+#[test]
+fn invalid_3_unexpected_attribute() {
+    run_with_config("tests/config_data/invalid-3.json", &["v"])
+        .success()
+        .stderr(contains("unknown field `other-attribute`"));
+}
