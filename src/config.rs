@@ -41,10 +41,14 @@ impl Config {
         }
     }
 
-    /// Load the given config file. Errors are printed to stderr and then an
-    /// empty default config is returned.
+    /// Load the given config file.
+    ///
+    /// Errors are printed to stderr and then the default config is returned.
+    ///
+    /// In every case the built-in relative exclude ".chdiff.txt" is added.
+    ///
     pub fn from_file(file: &PathBuf) -> Config {
-        match OpenOptions::new().read(true).open(file) {
+        let mut config = match OpenOptions::new().read(true).open(file) {
             Ok(file) => match serde_json::from_reader(BufReader::new(file)) {
                 Ok(cfg) => Ok(cfg),
                 Err(err) => Err(eprintln!("{err}")),
@@ -54,7 +58,11 @@ impl Config {
                 _ => Err(eprintln!("{err}")),
             },
         }
-        .unwrap_or(Self::new())
+        .unwrap_or(Self::new());
+
+        // add built-in excludes
+        config.exclude_relative.push(String::from(".chdiff.txt"));
+        config
     }
 
     fn create_default_config(filepath: &PathBuf) -> Config {
@@ -76,5 +84,3 @@ impl Config {
         default
     }
 }
-
-// TODO add built-in excludes (".chdiff.txt")

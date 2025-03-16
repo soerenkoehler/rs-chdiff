@@ -11,7 +11,7 @@ const ENV_HOME: &str = "HOME";
 const ENV_HOME: &str = "USERPROFILE";
 
 pub fn run_binary(args: &[&str]) -> Assert {
-    run_with_config("tests/config_data/valid-1.json", args)
+    run_with_config("tests/config_data/valid.json", args)
 }
 
 pub fn run_with_config(cfg: &str, args: &[&str]) -> Assert {
