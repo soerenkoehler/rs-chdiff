@@ -1,4 +1,4 @@
 {
     "exclude.absolute": [],
-    "exclude.relative": []
+    "exclude.relative": {}
 }

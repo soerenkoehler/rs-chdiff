@@ -13,7 +13,10 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct Config {
-    pub excludes: Vec<String>,
+    #[serde(rename = "exclude.absolute")]
+    pub exclude_absolute: Vec<String>,
+    #[serde(rename = "exclude.relative")]
+    pub exclude_relative: Vec<String>,
 }
 
 #[cfg(unix)]
@@ -32,7 +35,10 @@ impl Config {
 
     /// Create empty Config instance.
     pub fn new() -> Config {
-        Config { excludes: vec![] }
+        Config {
+            exclude_absolute: vec![],
+            exclude_relative: vec![],
+        }
     }
 
     /// Load the given config file. Errors are printed to stderr and then an
@@ -53,7 +59,11 @@ impl Config {
 
     fn create_default_config(filepath: &PathBuf) -> Config {
         let default = Self::new();
-        match OpenOptions::new().create_new(true).write(true).open(filepath) {
+        match OpenOptions::new()
+            .create_new(true)
+            .write(true)
+            .open(filepath)
+        {
             Ok(file) => {
                 // if let Err(err) =
                 match serde_json::to_writer(BufWriter::new(file), &default) {
@@ -67,5 +77,4 @@ impl Config {
     }
 }
 
-// TODO load from user home (win & linux)
 // TODO add built-in excludes (".chdiff.txt")
