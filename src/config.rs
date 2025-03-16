@@ -28,11 +28,6 @@ const ENV_HOME: &str = "USERPROFILE";
 const CONFIG_FILE: &str = ".chdiff-config.json";
 
 impl Config {
-    /// Return the path to the users config file.
-    pub fn get_config_path() -> PathBuf {
-        Path::new(&env::var(ENV_HOME).unwrap()).join(CONFIG_FILE)
-    }
-
     /// Create empty Config instance.
     pub fn new() -> Config {
         Config {
@@ -54,7 +49,7 @@ impl Config {
                 Err(err) => Err(eprintln!("{err}")),
             },
             Err(err) => match err.kind() {
-                ErrorKind::NotFound => Ok(Self::create_default_config(file)),
+                ErrorKind::NotFound => Ok(Self::create_default_config_file(file)),
                 _ => Err(eprintln!("{err}")),
             },
         }
@@ -65,7 +60,12 @@ impl Config {
         config
     }
 
-    fn create_default_config(filepath: &PathBuf) -> Config {
+    /// Return the path to the users config file.
+    pub fn get_config_path() -> PathBuf {
+        Path::new(&env::var(ENV_HOME).unwrap()).join(CONFIG_FILE)
+    }
+
+    fn create_default_config_file(filepath: &PathBuf) -> Config {
         let default = Self::new();
         match OpenOptions::new()
             .create_new(true)
