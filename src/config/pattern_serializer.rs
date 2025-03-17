@@ -26,7 +26,7 @@ impl<'de> Visitor<'de> for PatternVisitor {
     type Value = Vec<Pattern>;
 
     fn expecting(&self, formatter: &mut Formatter) -> fmt::Result {
-        formatter.write_str("a string containing a valid glob pattern")
+        formatter.write_str("a sequence of valid glob patterns")
     }
 
     fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
