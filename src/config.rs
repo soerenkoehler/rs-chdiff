@@ -1,3 +1,5 @@
+mod pattern_serializer;
+
 #[cfg(test)]
 mod config_test;
 
@@ -8,15 +10,18 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use glob::Pattern;
 use serde::{Deserialize, Serialize};
+
+use crate::digest::filelist::PatternList;
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct Config {
-    #[serde(rename = "exclude.absolute")]
-    pub exclude_absolute: Vec<String>,
-    #[serde(rename = "exclude.relative")]
-    pub exclude_relative: Vec<String>,
+    #[serde(rename = "exclude.absolute", with = "pattern_serializer")]
+    pub exclude_absolute: PatternList,
+    #[serde(rename = "exclude.relative", with = "pattern_serializer")]
+    pub exclude_relative: PatternList,
 }
 
 #[cfg(unix)]
@@ -56,7 +61,7 @@ impl Config {
         .unwrap_or(Self::new());
 
         // add built-in excludes
-        config.exclude_relative.push(String::from(".chdiff.txt"));
+        config.exclude_relative.push(Pattern::new(".chdiff.txt").unwrap());
         config
     }
 

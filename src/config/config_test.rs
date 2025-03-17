@@ -1,5 +1,7 @@
 use std::{path::PathBuf, str::FromStr};
 
+use glob::Pattern;
+
 use super::Config;
 
 #[test]
@@ -11,6 +13,6 @@ fn valid_config() {
     assert!(file.exists(), "test file missing");
 
     let cfg = Config::from_file(&file);
-    assert_eq!(cfg.exclude_absolute,Vec::<String>::new());
-    assert_eq!(cfg.exclude_relative,vec![".chdiff.txt"]);
+    assert_eq!(cfg.exclude_absolute,vec![]);
+    assert_eq!(cfg.exclude_relative,vec![Pattern::new(".chdiff.txt").unwrap()]);
 }

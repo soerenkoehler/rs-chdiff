@@ -12,19 +12,23 @@ pub(crate) struct FileList {
     pub entries: Vec<PathBuf>,
 }
 
-// TODO maybe non-pub in future
-pub(crate) struct FilterList {
-    pub patterns: Vec<Pattern>,
-}
+pub type PatternList = Vec<Pattern>;
 
 impl FileList {
-    pub fn from_dir(path: PathBuf) -> FileList {
+    pub fn from_dir(
+        path: PathBuf,
+        exclude_absolute: &PatternList,
+        exclude_relative: &PatternList,
+    ) -> FileList {
         let (tx, rx) = channel();
 
         Self::process_path(tx, path);
 
         FileList {
-            entries: rx.iter().collect(),
+            entries: rx.iter().filter(|_entry| {
+                // TODO apply filter
+                true
+            }).collect(),
         }
     }
 
@@ -49,4 +53,6 @@ impl FileList {
             tx.send(path.to_owned()).unwrap();
         }
     }
+
+    // TODO fn filter_path(path:&Pathbuf,Vec)
 }
