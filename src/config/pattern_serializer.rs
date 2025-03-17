@@ -1,5 +1,9 @@
 use glob::Pattern;
-use serde::{de::{self, Visitor}, ser::SerializeSeq, Deserializer, Serializer};
+use serde::{
+    Deserializer, Serializer,
+    de::{self, Visitor},
+    ser::SerializeSeq,
+};
 use std::fmt::{self, Formatter};
 
 pub fn serialize<S>(patterns: &Vec<Pattern>, serializer: S) -> Result<S::Ok, S::Error>
@@ -8,7 +12,7 @@ where
 {
     let mut seq = serializer.serialize_seq(Some(patterns.len())).unwrap();
     patterns.into_iter().for_each(|p| {
-        seq.serialize_element(p.as_str());
+        let _ = seq.serialize_element(p.as_str());
     });
     seq.end()
 }

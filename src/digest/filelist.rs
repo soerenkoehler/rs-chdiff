@@ -1,6 +1,6 @@
 use std::{
     fs::read_dir,
-    path::PathBuf,
+    path::{self, PathBuf},
     sync::mpsc::{Sender, channel},
     thread,
 };
@@ -16,19 +16,19 @@ pub type PatternList = Vec<Pattern>;
 
 impl FileList {
     pub fn from_dir(
-        path: PathBuf,
+        root_path: PathBuf,
         exclude_absolute: &PatternList,
         exclude_relative: &PatternList,
     ) -> FileList {
         let (tx, rx) = channel();
 
-        Self::process_path(tx, path);
+        Self::process_path(tx, root_path);
 
         FileList {
-            entries: rx.iter().filter(|_entry| {
-                // TODO apply filter
-                true
-            }).collect(),
+            entries: rx
+                .into_iter()
+                .filter(|path| Self::filter_path(path, exclude_absolute, exclude_relative))
+                .collect(),
         }
     }
 
@@ -54,5 +54,17 @@ impl FileList {
         }
     }
 
-    // TODO fn filter_path(path:&Pathbuf,Vec)
+    fn filter_path(path: &PathBuf, exclude_abs: &PatternList, exclude_rel: &PatternList) -> bool {
+        let Ok(path_abs) = path::absolute(path) else {
+            return true;
+        };
+        Self::matches_none(&path_abs, exclude_abs) && Self::matches_none(path, exclude_rel)
+    }
+
+    fn matches_none(path: &PathBuf, patterns: &PatternList) -> bool {
+        patterns
+            .iter()
+            .find(|pattern| pattern.matches_path(path))
+            .is_none()
+    }
 }
