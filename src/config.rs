@@ -1,5 +1,3 @@
-mod pattern_serializer;
-
 #[cfg(test)]
 mod config_test;
 
