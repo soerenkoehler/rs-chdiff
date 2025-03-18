@@ -13,14 +13,14 @@ use std::{
 use glob::Pattern;
 use serde::{Deserialize, Serialize};
 
-use crate::digest::filelist::PatternList;
+use crate::patternlist::PatternList;
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct Config {
-    #[serde(rename = "exclude.absolute", with = "pattern_serializer")]
+    #[serde(rename = "exclude.absolute")]
     pub exclude_absolute: PatternList,
-    #[serde(rename = "exclude.relative", with = "pattern_serializer")]
+    #[serde(rename = "exclude.relative")]
     pub exclude_relative: PatternList,
 }
 
@@ -34,10 +34,10 @@ const CONFIG_FILE: &str = ".chdiff-config.json";
 
 impl Config {
     /// Create empty Config instance.
-    pub fn new() -> Config {
-        Config {
-            exclude_absolute: vec![],
-            exclude_relative: vec![],
+    pub fn new() -> Self {
+        Self {
+            exclude_absolute: PatternList::new(),
+            exclude_relative: PatternList::new(),
         }
     }
 
@@ -47,7 +47,7 @@ impl Config {
     ///
     /// In every case the built-in relative exclude ".chdiff.txt" is added.
     ///
-    pub fn from_file(file: &PathBuf) -> Config {
+    pub fn from_file(file: &PathBuf) -> Self {
         let mut config = match OpenOptions::new().read(true).open(file) {
             Ok(file) => match serde_json::from_reader(BufReader::new(file)) {
                 Ok(cfg) => Ok(cfg),
@@ -61,7 +61,10 @@ impl Config {
         .unwrap_or(Self::new());
 
         // add built-in excludes
-        config.exclude_relative.push(Pattern::new(".chdiff.txt").unwrap());
+        config
+            .exclude_relative
+            .push(Pattern::new(".chdiff.txt").unwrap());
+
         config
     }
 
@@ -70,20 +73,17 @@ impl Config {
         Path::new(&env::var(ENV_HOME).unwrap()).join(CONFIG_FILE)
     }
 
-    fn create_default_config_file(filepath: &PathBuf) -> Config {
+    fn create_default_config_file(filepath: &PathBuf) -> Self {
         let default = Self::new();
         match OpenOptions::new()
             .create_new(true)
             .write(true)
             .open(filepath)
         {
-            Ok(file) => {
-                // if let Err(err) =
-                match serde_json::to_writer(BufWriter::new(file), &default) {
-                    Ok(_) => println!("created default config file: {}", filepath.display()),
-                    Err(err) => eprintln!("{err}"),
-                }
-            }
+            Ok(file) => match serde_json::to_writer(BufWriter::new(file), &default) {
+                Ok(_) => println!("created default config file: {}", filepath.display()),
+                Err(err) => eprintln!("{err}"),
+            },
             Err(err) => eprintln!("{err}"),
         }
         default

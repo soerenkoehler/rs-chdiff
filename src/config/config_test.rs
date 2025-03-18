@@ -1,8 +1,7 @@
 use std::{path::PathBuf, str::FromStr};
 
-use glob::Pattern;
-
 use super::Config;
+use crate::patternlist::PatternList;
 
 #[test]
 fn valid_config() {
@@ -12,7 +11,12 @@ fn valid_config() {
     // create a valid file
     assert!(file.exists(), "test file missing");
 
+    let expect_relative=PatternList::new();
+
     let cfg = Config::from_file(&file);
-    assert_eq!(cfg.exclude_absolute,vec![]);
-    assert_eq!(cfg.exclude_relative,vec![Pattern::new(".chdiff.txt").unwrap()]);
+    assert_eq!(cfg.exclude_absolute, PatternList::new());
+    assert_eq!(
+        cfg.exclude_relative,
+        expect_relative
+    );
 }
