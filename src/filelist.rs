@@ -1,3 +1,6 @@
+#[cfg(test)]
+mod filelist_test;
+
 use std::{
     fs::read_dir,
     path::{self, PathBuf},
@@ -13,18 +16,20 @@ pub(crate) struct FileList {
 }
 
 impl FileList {
-    pub fn from_dir(
+    pub fn from_path(
         root_path: PathBuf,
         exclude_absolute: &PatternList,
         exclude_relative: &PatternList,
     ) -> Self {
         let (tx, rx) = channel();
 
-        Self::process_path(tx, root_path);
+        if let Ok(true) = root_path.try_exists() {
+            Self::process_path(tx, root_path)
+        }
 
         Self {
             entries: rx
-                .into_iter()
+                .iter()
                 .filter(|path| {
                     let Ok(path_abs) = path::absolute(path) else {
                         return true;
@@ -39,7 +44,6 @@ impl FileList {
         if path.is_dir() {
             match read_dir(&path) {
                 Ok(dir_entries) => dir_entries
-                    .into_iter()
                     .filter_map(|entry| match entry {
                         Ok(entry) => Some({
                             let tx_clone: Sender<PathBuf> = tx.clone();
@@ -48,7 +52,7 @@ impl FileList {
                         _ => None,
                     })
                     .collect::<Vec<_>>()
-                    .into_iter()
+                    .iter()
                     .for_each(|thread| thread.join().unwrap_or_default()),
                 _ => eprintln!("error accessing {}", path.display()),
             }
