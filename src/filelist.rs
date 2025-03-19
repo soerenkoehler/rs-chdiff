@@ -21,22 +21,28 @@ impl FileList {
         exclude_absolute: &PatternList,
         exclude_relative: &PatternList,
     ) -> Self {
-        let (tx, rx) = channel();
+        match root_path.try_exists() {
+            Ok(true) => {
+                let (tx, rx) = channel();
 
-        if let Ok(true) = root_path.try_exists() {
-            Self::process_path(tx, root_path)
-        }
+                Self::process_path(tx, root_path);
 
-        Self {
-            entries: rx
-                .iter()
-                .filter(|path| {
-                    let Ok(path_abs) = path::absolute(path) else {
-                        return true;
-                    };
-                    !exclude_absolute.matches(&path_abs) && !exclude_relative.matches(path)
-                })
-                .collect(),
+                Self {
+                    entries: rx
+                        .into_iter()
+                        .filter(|path| {
+                            let Ok(path_abs) = path::absolute(path) else {
+                                return true;
+                            };
+                            !exclude_absolute.matches(&path_abs) && !exclude_relative.matches(path)
+                        })
+                        .collect(),
+                }
+            }
+            _ => {
+                eprint!("path not found: {}", root_path.display());
+                Self { entries: vec![] }
+            }
         }
     }
 
@@ -52,7 +58,7 @@ impl FileList {
                         _ => None,
                     })
                     .collect::<Vec<_>>()
-                    .iter()
+                    .into_iter()
                     .for_each(|thread| thread.join().unwrap_or_default()),
                 _ => eprintln!("error accessing {}", path.display()),
             }
