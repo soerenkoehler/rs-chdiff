@@ -25,24 +25,17 @@ testcase_filetree() {
             create_file $DIR/file$N.dat 0
         done
     done
-    create_file .chdiff.txt 0
 
     find . -type f \
     | sort >../all_files.txt
 
     find . -type f \
-    -not -name ".chdiff.txt" \
-    | sort >../all_files_without_default.txt
-
-    find . -type f \
-    -not -name ".chdiff.txt"  \
     -not -path "./dir0/file3.dat"  \
     | sort >../exclude_specific_file.txt
 
     find . -type f \
-    -not -name ".chdiff.txt"  \
     -not -path "**/file3.dat"  \
     | sort >../exclude_many_files.txt
 }
 
-create filetree testcase_filetree
+create . testcase_filetree
