@@ -27,14 +27,17 @@ testcase_filetree() {
     done
 
     find . -type f \
+    | sed 's/^\.\///' \
     | sort >../all_files.txt
 
     find . -type f \
     -not -path "./dir0/file3.dat"  \
+    | sed 's/^\.\///' \
     | sort >../exclude_specific_file.txt
 
     find . -type f \
     -not -path "**/file3.dat"  \
+    | sed 's/^\.\///' \
     | sort >../exclude_many_files.txt
 }
 

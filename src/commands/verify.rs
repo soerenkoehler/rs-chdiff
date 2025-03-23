@@ -11,6 +11,7 @@ impl CommandExecutor<ArgsVerify> for Verify {
             &deps.config.exclude_absolute,
             &deps.config.exclude_relative,
         )
+        .unwrap()
         .entries;
         files.sort();
         files.iter().for_each(|x| println!("{}", x.display()));

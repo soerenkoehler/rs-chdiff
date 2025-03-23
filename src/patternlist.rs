@@ -6,7 +6,7 @@ use serde::{
 };
 use std::{
     fmt::{self, Formatter},
-    path::PathBuf,
+    path::Path,
 };
 
 #[derive(PartialEq, Debug)]
@@ -19,10 +19,13 @@ impl PatternList {
         Self { patterns: vec![] }
     }
 
-    pub(crate) fn matches(&self, path: &PathBuf) -> bool {
+    pub(crate) fn matches<P>(&self, path: P) -> bool
+    where
+        P: AsRef<Path>,
+    {
         self.patterns
             .iter()
-            .find(|pattern| pattern.matches_path(path))
+            .find(|pattern| pattern.matches_path(path.as_ref()))
             .is_some()
     }
 

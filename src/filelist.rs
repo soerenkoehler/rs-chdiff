@@ -3,7 +3,8 @@ mod filelist_test;
 
 use std::{
     fs::read_dir,
-    path::{self, PathBuf},
+    io::Result,
+    path::{self, Path, PathBuf},
     sync::mpsc::{Sender, channel},
     thread,
 };
@@ -20,35 +21,40 @@ impl FileList {
         root_path: PathBuf,
         exclude_absolute: &PatternList,
         exclude_relative: &PatternList,
-    ) -> Self {
-        match root_path.try_exists() {
-            Ok(true) => {
-                let (tx, rx) = channel();
+    ) -> Result<Self> {
+        // Create file list in terms of absolute paths.
+        let root_path = match path::absolute(root_path) {
+            Ok(result) => result,
+            Err(err) => return Err(err),
+        };
 
-                Self::process_path(tx, root_path);
+        let (tx, rx) = channel();
 
-                Self {
-                    entries: rx
-                        .into_iter()
-                        .filter(|path| {
-                            let Ok(path_abs) = path::absolute(path) else {
-                                return true;
-                            };
-                            !exclude_absolute.matches(&path_abs) && !exclude_relative.matches(path)
-                        })
-                        .collect(),
-                }
-            }
-            _ => {
-                eprint!("path not found: {}", root_path.display());
-                Self { entries: vec![] }
-            }
-        }
+        Self::process_path(tx, &root_path);
+
+        Ok(Self {
+            entries: rx
+                .iter()
+                .filter_map(|path| {
+                    if let Ok(path_rel) = path.strip_prefix(&root_path) {
+                        if !exclude_absolute.matches(&path) && !exclude_relative.matches(path_rel)
+                        {
+                            return Some(path_rel.to_path_buf());
+                        }
+                    }
+                    None
+                })
+                .collect(),
+        })
     }
 
-    fn process_path(tx: Sender<PathBuf>, path: PathBuf) {
+    fn process_path<P>(tx: Sender<PathBuf>, path: P)
+    where
+        P: AsRef<Path>,
+    {
+        let path = path.as_ref();
         if path.is_dir() {
-            match read_dir(&path) {
+            match read_dir(path) {
                 Ok(dir_entries) => dir_entries
                     .filter_map(|entry| match entry {
                         Ok(entry) => Some({
@@ -63,7 +69,7 @@ impl FileList {
                 _ => eprintln!("error accessing {}", path.display()),
             }
         } else if path.is_file() {
-            tx.send(path.to_owned()).unwrap();
+            tx.send(path.to_path_buf()).unwrap();
         }
     }
 }
