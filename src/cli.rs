@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod cli_test;
 
-use clap::{Args, CommandFactory, Parser, Subcommand, crate_name, crate_version};
+use clap::{Args, CommandFactory, Parser, Subcommand, ValueEnum, crate_name, crate_version};
 use std::{ffi::OsString, path::PathBuf};
 
 use crate::Dependencies;
@@ -25,6 +25,12 @@ pub(crate) enum Command {
     Backup(ArgsBackup),
 }
 
+#[derive(ValueEnum, Clone, Debug)]
+pub(crate) enum HashAlgorithm {
+    Sha256,
+    Sha512,
+}
+
 #[derive(Args, Debug)]
 pub(crate) struct ArgsBackup {
     #[arg(default_value = ".")]
@@ -35,6 +41,8 @@ pub(crate) struct ArgsBackup {
 pub(crate) struct ArgsCreate {
     #[arg(default_value = ".")]
     pub path: PathBuf,
+    #[arg(short, long, value_enum, ignore_case=true)]
+    pub algorithm: HashAlgorithm,
 }
 
 #[derive(Args, Debug)]
@@ -49,6 +57,7 @@ where
     I::Item: Into<OsString> + Clone,
 {
     let cli = Cli::parse_from(args);
+    println!("{cli:?}");
 
     match cli.cmd {
         Some(Command::Backup(args)) => deps.backup.execute(deps, args),

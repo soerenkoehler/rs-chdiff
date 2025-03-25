@@ -48,11 +48,11 @@ impl Config {
         let mut config = match OpenOptions::new().read(true).open(file) {
             Ok(file) => match serde_json::from_reader(BufReader::new(file)) {
                 Ok(cfg) => Ok(cfg),
-                Err(err) => Err(eprintln!("{err}")),
+                Err(err) => Err(eprintln!("Reading config file: {err}")),
             },
             Err(err) => match err.kind() {
                 ErrorKind::NotFound => Ok(Self::create_default_config_file(file)),
-                _ => Err(eprintln!("{err}")),
+                _ => Err(eprintln!("Reading config file: {err}")),
             },
         }
         .unwrap_or(Self::new());
