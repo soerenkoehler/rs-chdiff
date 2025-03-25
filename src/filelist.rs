@@ -11,7 +11,6 @@ use std::{
 
 use crate::patternlist::PatternList;
 
-// TODO maybe non-pub in future
 pub(crate) struct FileList {
     pub entries: Vec<PathBuf>,
 }

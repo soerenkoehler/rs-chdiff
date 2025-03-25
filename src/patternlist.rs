@@ -15,11 +15,11 @@ pub(crate) struct PatternList {
 }
 
 impl PatternList {
-    pub(crate) fn new() -> Self {
+    pub fn new() -> Self {
         Self { patterns: vec![] }
     }
 
-    pub(crate) fn matches<P>(&self, path: P) -> bool
+    pub fn matches<P>(&self, path: P) -> bool
     where
         P: AsRef<Path>,
     {
@@ -29,7 +29,7 @@ impl PatternList {
             .is_some()
     }
 
-    pub(crate) fn push(&mut self, pattern: Pattern) -> &mut PatternList {
+    pub fn push(&mut self, pattern: Pattern) -> &mut PatternList {
         self.patterns.push(pattern);
         self
     }
