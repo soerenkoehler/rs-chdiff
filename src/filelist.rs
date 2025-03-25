@@ -2,10 +2,10 @@
 mod filelist_test;
 
 use std::{
-    fs::read_dir,
+    fs::{canonicalize, read_dir},
     io::Result,
-    path::{self, Path, PathBuf},
-    sync::mpsc::{Sender, channel},
+    path::{Path, PathBuf},
+    sync::mpsc::{channel, Sender},
     thread,
 };
 
@@ -23,7 +23,7 @@ impl FileList {
         exclude_relative: &PatternList,
     ) -> Result<Self> {
         // Create file list in terms of absolute paths.
-        let root_path = match path::absolute(root_path) {
+        let root_path = match canonicalize(root_path) {
             Ok(result) => result,
             Err(err) => return Err(err),
         };

@@ -31,14 +31,26 @@ testcase_filetree() {
     | sort >../all_files.txt
 
     find . -type f \
-    -not -path "./dir0/file3.dat"  \
+    -not -path "./file3.dat"  \
     | sed 's/^\.\///' \
-    | sort >../exclude_specific_file.txt
+    | sort >../specific_one_pattern.txt
+
+    find . -type f \
+    -not -path "./dir0/file2.dat"  \
+    -not -path "./dir1/file4.dat"  \
+    | sed 's/^\.\///' \
+    | sort >../specific_two_patterns.txt
 
     find . -type f \
     -not -path "**/file3.dat"  \
     | sed 's/^\.\///' \
-    | sort >../exclude_many_files.txt
+    | sort >../wildcard_one_pattern.txt
+
+    find . -type f \
+    -not -path "**/dir0/file2.dat"  \
+    -not -path "**/dir1/file4.dat"  \
+    | sed 's/^\.\///' \
+    | sort >../wildcard_two_patterns.txt
 }
 
 create . testcase_filetree

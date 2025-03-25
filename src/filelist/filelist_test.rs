@@ -1,32 +1,161 @@
 use std::{
     fs::OpenOptions,
-    io::{BufRead, BufReader},
+    io::{BufRead, BufReader, ErrorKind},
     path::PathBuf,
     str::FromStr,
 };
+
+use glob::Pattern;
 
 use crate::patternlist::PatternList;
 
 use super::FileList;
 
 #[test]
-fn relative_excludes() {
-    // FIXME invalid root path is reported directly in stderr => write
-    // integration test
+fn bad_root_path() {
+    match FileList::from_path(
+        PathBuf::from_str("tests/filelist_data/non-existant").unwrap(),
+        &PatternList::new(),
+        &PatternList::new(),
+    ) {
+        Err(err) => assert_eq!(err.kind(), ErrorKind::NotFound),
+        _ => panic!("should report non-rexistant root path"),
+    };
+}
+
+#[test]
+fn no_excludes() {
     assert_filelist(
-        FileList::from_path(
-            PathBuf::from_str("tests/filelist_data/data").unwrap(),
-            &PatternList::new(),
-            &PatternList::new(),
-        )
-        .unwrap(),
         "tests/filelist_data/all_files.txt",
+        "tests/filelist_data/data",
+        &[],
+        &[],
     );
 }
 
-fn assert_filelist(mut actual: FileList, expect_file: &str) {
+#[test]
+fn relative_specific_one_pattern() {
+    assert_filelist(
+        "tests/filelist_data/specific_one_pattern.txt",
+        "tests/filelist_data/data",
+        &[],
+        &["file3.dat"],
+    );
+}
+
+#[test]
+fn relative_specific_two_patterns() {
+    assert_filelist(
+        "tests/filelist_data/specific_two_patterns.txt",
+        "tests/filelist_data/data",
+        &[],
+        &["dir0/file2.dat", "dir1/file4.dat"],
+    );
+}
+
+#[test]
+fn relative_wildcard_one_pattern() {
+    assert_filelist(
+        "tests/filelist_data/wildcard_one_pattern.txt",
+        "tests/filelist_data/data",
+        &[],
+        &["**/file3.dat"],
+    );
+}
+
+#[test]
+fn relative_wildcard_two_patterns() {
+    assert_filelist(
+        "tests/filelist_data/wildcard_two_patterns.txt",
+        "tests/filelist_data/data",
+        &[],
+        &["**/dir0/file2.dat", "**/dir1/file4.dat"],
+    );
+}
+
+#[test]
+fn absolute_specific_one_pattern() {
+    let pattern = std::env::current_dir()
+        .unwrap()
+        .join("tests/filelist_data/data/file3.dat");
+    assert_filelist(
+        "tests/filelist_data/specific_one_pattern.txt",
+        "tests/filelist_data/data",
+        &[pattern.to_str().unwrap()],
+        &[],
+    );
+}
+
+#[test]
+fn absolute_specific_two_pattern() {
+    let pattern1 = std::env::current_dir()
+        .unwrap()
+        .join("tests/filelist_data/data/dir0/file2.dat");
+    let pattern2 = std::env::current_dir()
+        .unwrap()
+        .join("tests/filelist_data/data/dir1/file4.dat");
+    assert_filelist(
+        "tests/filelist_data/specific_two_patterns.txt",
+        "tests/filelist_data/data",
+        &[pattern1.to_str().unwrap(), pattern2.to_str().unwrap()],
+        &[],
+    );
+}
+
+#[test]
+fn absolute_wildcard_one_pattern() {
+    let pattern = std::env::current_dir()
+        .unwrap()
+        .join("tests/filelist_data/data/**/file3.dat");
+    assert_filelist(
+        "tests/filelist_data/wildcard_one_pattern.txt",
+        "tests/filelist_data/data",
+        &[pattern.to_str().unwrap()],
+        &[],
+    );
+}
+
+#[test]
+fn absolute_wildcard_two_pattern() {
+    let pattern1 = std::env::current_dir()
+        .unwrap()
+        .join("tests/filelist_data/data/**/dir0/file2.dat");
+    let pattern2 = std::env::current_dir()
+        .unwrap()
+        .join("tests/filelist_data/data/**/dir1/file4.dat");
+    assert_filelist(
+        "tests/filelist_data/wildcard_two_patterns.txt",
+        "tests/filelist_data/data",
+        &[pattern1.to_str().unwrap(), pattern2.to_str().unwrap()],
+        &[],
+    );
+}
+
+// #[test]
+// fn absolute_wildcard_excludes() {
+//     assert_filelist(
+//         "tests/filelist_data/exclude_many_files.txt",
+//         "tests/filelist_data/data",
+//         &["**/file3.dat"],
+//         &[],
+//     );
+// }
+
+fn assert_filelist(
+    expect_file: &str,
+    root_path: &str,
+    exclude_absolute: &[&str],
+    exclude_relative: &[&str],
+) {
+    let mut actual = FileList::from_path(
+        PathBuf::from_str(root_path).unwrap(),
+        &to_patternlist(exclude_absolute),
+        &to_patternlist(exclude_relative),
+    )
+    .unwrap();
     actual.entries.sort();
     let mut actual = actual.entries.into_iter();
+
     let expect_file = OpenOptions::new().read(true).open(expect_file).unwrap();
     let mut expect = BufReader::new(expect_file).lines();
 
@@ -40,4 +169,12 @@ fn assert_filelist(mut actual: FileList, expect_file: &str) {
         (_, Some(Err(e))) => panic!("can't read expectation: {:?}", e),
         _ => false,
     } {}
+}
+
+fn to_patternlist(patterns: &[&str]) -> PatternList {
+    let mut result = PatternList::new();
+    for pattern in patterns {
+        result.push(Pattern::new(pattern).unwrap());
+    }
+    result
 }
