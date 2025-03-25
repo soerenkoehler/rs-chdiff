@@ -5,7 +5,7 @@ use std::{
     fs::{canonicalize, read_dir},
     io::Result,
     path::{Path, PathBuf},
-    sync::mpsc::{channel, Sender},
+    sync::mpsc::{Sender, channel},
     thread,
 };
 
@@ -37,8 +37,7 @@ impl FileList {
                 .iter()
                 .filter_map(|path| {
                     if let Ok(path_rel) = path.strip_prefix(&root_path) {
-                        if !exclude_absolute.matches(&path) && !exclude_relative.matches(path_rel)
-                        {
+                        if !exclude_absolute.matches(&path) && !exclude_relative.matches(path_rel) {
                             return Some(path_rel.to_path_buf());
                         }
                     }
@@ -48,10 +47,7 @@ impl FileList {
         })
     }
 
-    fn process_path<P>(tx: Sender<PathBuf>, path: P)
-    where
-        P: AsRef<Path>,
-    {
+    fn process_path<P: AsRef<Path>>(tx: Sender<PathBuf>, path: P) {
         let path = path.as_ref();
         if path.is_dir() {
             match read_dir(path) {
