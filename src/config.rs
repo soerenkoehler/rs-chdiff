@@ -1,15 +1,14 @@
 #[cfg(test)]
 mod config_test;
 
+use glob::Pattern;
+use serde::{Deserialize, Serialize};
 use std::{
     env,
     fs::OpenOptions,
     io::{BufReader, BufWriter, ErrorKind},
     path::{Path, PathBuf},
 };
-
-use glob::Pattern;
-use serde::{Deserialize, Serialize};
 
 use crate::patternlist::PatternList;
 

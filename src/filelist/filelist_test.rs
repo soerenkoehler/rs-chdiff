@@ -1,3 +1,4 @@
+use glob::Pattern;
 use std::{
     fs::OpenOptions,
     io::{BufRead, BufReader, ErrorKind},
@@ -5,11 +6,8 @@ use std::{
     str::FromStr,
 };
 
-use glob::Pattern;
-
-use crate::patternlist::PatternList;
-
 use super::FileList;
+use crate::patternlist::PatternList;
 
 #[test]
 fn bad_root_path() {
@@ -130,16 +128,6 @@ fn absolute_wildcard_two_pattern() {
         &[],
     );
 }
-
-// #[test]
-// fn absolute_wildcard_excludes() {
-//     assert_filelist(
-//         "tests/filelist_data/exclude_many_files.txt",
-//         "tests/filelist_data/data",
-//         &["**/file3.dat"],
-//         &[],
-//     );
-// }
 
 fn assert_filelist(
     expect_file: &str,

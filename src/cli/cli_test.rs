@@ -1,6 +1,5 @@
-use std::path::PathBuf;
-
 use clap::Parser;
+use std::path::PathBuf;
 
 use super::{
     ArgsBackup, ArgsCreate, ArgsVerify, Cli,
