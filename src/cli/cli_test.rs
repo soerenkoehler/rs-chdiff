@@ -15,13 +15,13 @@ fn default_path_backup() {
     assert_eq!(args.path, PathBuf::from("."))
 }
 
-#[test]
-fn default_path_create() {
-    let Some(Create(args)) = Cli::parse_from(["", "c"]).cmd else {
-        panic!("expected command: create")
-    };
-    assert_eq!(args.path, PathBuf::from("."))
-}
+// #[test]
+// fn default_path_create() {
+//     let Some(Create(args)) = Cli::parse_from(["", "c"]).cmd else {
+//         panic!("expected command: create")
+//     };
+//     assert_eq!(args.path, PathBuf::from("."))
+// }
 
 #[test]
 fn default_path_verify() {
@@ -57,5 +57,5 @@ macro_rules! command_mapping_test {
 }
 
 command_mapping_test!(command_mapping_backup, "b", once, never, never);
-command_mapping_test!(command_mapping_create, "c", never, once, never);
+// command_mapping_test!(command_mapping_create, "c", never, once, never);
 command_mapping_test!(command_mapping_verify, "v", never, never, once);

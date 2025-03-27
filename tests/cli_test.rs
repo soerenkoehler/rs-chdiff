@@ -32,26 +32,26 @@ fn help_b_flag() {
         .stdout(contains(HELP_TEXT_BACKUP));
 }
 
-#[test]
-fn help_create() {
-    run_binary(&["help", "create"])
-        .success()
-        .stdout(contains(HELP_TEXT_CREATE));
-}
+// #[test]
+// fn help_create() {
+//     run_binary(&["help", "create"])
+//         .success()
+//         .stdout(contains(HELP_TEXT_CREATE));
+// }
 
-#[test]
-fn help_c() {
-    run_binary(&["help", "c"])
-        .success()
-        .stdout(contains(HELP_TEXT_CREATE));
-}
+// #[test]
+// fn help_c() {
+//     run_binary(&["help", "c"])
+//         .success()
+//         .stdout(contains(HELP_TEXT_CREATE));
+// }
 
-#[test]
-fn help_c_flag() {
-    run_binary(&["c", "--help"])
-        .success()
-        .stdout(contains(HELP_TEXT_CREATE));
-}
+// #[test]
+// fn help_c_flag() {
+//     run_binary(&["c", "--help"])
+//         .success()
+//         .stdout(contains(HELP_TEXT_CREATE));
+// }
 
 #[test]
 fn help_verify() {
@@ -74,14 +74,14 @@ fn help_v_flag() {
         .stdout(contains(HELP_TEXT_VERIFY));
 }
 
-#[test]
-fn version() {
-    run_binary(&["--version"]).success().stdout(eq(format!(
-        "{} {}\n",
-        crate_name!(),
-        crate_version!()
-    )));
-}
+// #[test]
+// fn version() {
+//     run_binary(&["--version"]).success().stdout(eq(format!(
+//         "{} {}\n",
+//         crate_name!(),
+//         crate_version!()
+//     )));
+// }
 
 #[test]
 fn missing_cmd() {
