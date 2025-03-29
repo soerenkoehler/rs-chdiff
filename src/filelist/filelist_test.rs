@@ -6,8 +6,7 @@ use std::{
     str::FromStr,
 };
 
-use super::FileList;
-use crate::patternlist::PatternList;
+use super::{FileList, PatternList};
 
 macro_rules! to_absolute_pattern {
     ($p:expr) => {

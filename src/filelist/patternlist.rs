@@ -19,10 +19,7 @@ impl PatternList {
         Self { patterns: vec![] }
     }
 
-    pub fn matches<P>(&self, path: P) -> bool
-    where
-        P: AsRef<Path>,
-    {
+    pub fn matches<P: AsRef<Path>>(&self, path: P) -> bool {
         self.patterns
             .iter()
             .find(|pattern| pattern.matches_path(path.as_ref()))
@@ -36,10 +33,7 @@ impl PatternList {
 }
 
 impl Serialize for PatternList {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         let mut seq = serializer.serialize_seq(Some(self.patterns.len())).unwrap();
         self.patterns.iter().for_each(|p| {
             let _ = seq.serialize_element(p.as_str());
@@ -49,10 +43,7 @@ impl Serialize for PatternList {
 }
 
 impl<'de> Deserialize<'de> for PatternList {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         match deserializer.deserialize_seq(PatternVisitor {}) {
             Ok(patterns) => Ok(PatternList { patterns: patterns }),
             Err(err) => Err(de::Error::custom(err.to_string())),
@@ -69,10 +60,7 @@ impl<'de> Visitor<'de> for PatternVisitor {
         formatter.write_str("a sequence of valid glob patterns")
     }
 
-    fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
-    where
-        A: de::SeqAccess<'de>,
-    {
+    fn visit_seq<A: de::SeqAccess<'de>>(self, mut seq: A) -> Result<Self::Value, A::Error> {
         let mut result: Self::Value = vec![];
         loop {
             match seq.next_element::<String>() {

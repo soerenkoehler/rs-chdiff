@@ -10,7 +10,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use crate::patternlist::PatternList;
+use crate::filelist::PatternList;
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(deny_unknown_fields)]

@@ -3,7 +3,6 @@ mod commands;
 mod config;
 mod digest;
 mod filelist;
-mod patternlist;
 
 use std::env::args_os;
 

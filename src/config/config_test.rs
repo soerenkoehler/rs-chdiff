@@ -2,7 +2,7 @@ use glob::Pattern;
 use std::{path::PathBuf, str::FromStr};
 
 use super::Config;
-use crate::patternlist::PatternList;
+use super::PatternList;
 
 #[test]
 fn valid_config() {

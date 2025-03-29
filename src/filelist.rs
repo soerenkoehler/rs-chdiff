@@ -1,3 +1,5 @@
+mod patternlist;
+
 #[cfg(test)]
 mod filelist_test;
 
@@ -9,7 +11,7 @@ use std::{
     thread,
 };
 
-use crate::patternlist::PatternList;
+pub(crate) use patternlist::PatternList;
 
 pub(crate) struct FileList {
     pub entries: Vec<PathBuf>,

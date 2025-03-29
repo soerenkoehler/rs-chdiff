@@ -59,3 +59,4 @@ if [[ ! -e Cargo.toml && -e .git ]]; then
 fi
 
 create filelist_test
+create digest_test
