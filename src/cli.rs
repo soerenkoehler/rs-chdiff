@@ -41,7 +41,7 @@ pub(crate) struct ArgsBackup {
 pub(crate) struct ArgsCreate {
     #[arg(default_value = ".")]
     pub path: PathBuf,
-    #[arg(short, long, value_enum, ignore_case=true)]
+    #[arg(short, long, value_enum, ignore_case=true, default_value="sha256")]
     pub algorithm: HashAlgorithm,
 }
 
@@ -57,7 +57,6 @@ where
     I::Item: Into<OsString> + Clone,
 {
     let cli = Cli::parse_from(args);
-    println!("{cli:?}");
 
     match cli.cmd {
         Some(Command::Backup(args)) => deps.backup.execute(deps, args),
