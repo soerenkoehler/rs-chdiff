@@ -1,5 +1,11 @@
 #!/bin/bash
 
+create() {
+    create_dir generated/$1/data
+    $1
+    popd
+}
+
 create_dir() {
     mkdir -p $1
     pushd $1
@@ -9,13 +15,7 @@ create_file() {
     dd if=/dev/urandom of=$1 bs=1024 count=$2 status=none
 }
 
-create() {
-    create_dir $1/data
-    $2
-    popd
-}
-
-testcase_filetree() {
+filelist_test() {
     for N in {0..15}; do
         mkdir -p dir$(($N/8%2))/dir$(($N/4%2))/dir$(($N/2%2))/dir$(($N%2))
     done
@@ -53,4 +53,9 @@ testcase_filetree() {
     | sort >../wildcard_two_patterns.txt
 }
 
-create . testcase_filetree
+if [[ ! -e Cargo.toml && -e .git ]]; then
+    printf "not in project root\n"
+    exit -1
+fi
+
+create filelist_test
