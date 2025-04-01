@@ -12,7 +12,7 @@ create_dir() {
 }
 
 create_file() {
-    dd if=/dev/urandom of=$1 bs=1024 count=$2 status=none
+    dd if=/dev/urandom of=$1 bs=1MiB count=$2 status=none
 }
 
 filelist_test() {
@@ -51,6 +51,20 @@ filelist_test() {
     -not -path "**/dir1/file4.dat"  \
     | sed 's/^\.\///' \
     | sort >../wildcard_two_patterns.txt
+}
+
+digest_test() {
+    create_file empty.dat 0
+    create_file small.dat 1KiB
+    create_file large.dat 1GiB
+
+    cd ..
+    truncate -s 0 sha256.txt
+    truncate -s 0 sha512.txt
+    for FILE in $(find data -type f); do
+        sha256sum $FILE >>sha256.txt
+        sha512sum $FILE >>sha512.txt
+    done
 }
 
 if [[ ! -e Cargo.toml && -e .git ]]; then
