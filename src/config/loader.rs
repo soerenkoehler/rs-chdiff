@@ -1,5 +1,4 @@
 use glob::Pattern;
-use serde::{Deserialize, Serialize};
 use std::{
     env,
     fs::OpenOptions,
@@ -9,22 +8,7 @@ use std::{
 
 use crate::filescanner::PatternList;
 
-#[derive(Serialize, Deserialize, Debug)]
-#[serde(deny_unknown_fields)]
-pub struct Config {
-    #[serde(rename = "exclude.absolute")]
-    pub exclude_absolute: PatternList,
-    #[serde(rename = "exclude.relative")]
-    pub exclude_relative: PatternList,
-}
-
-#[cfg(unix)]
-const ENV_HOME: &str = "HOME";
-
-#[cfg(windows)]
-const ENV_HOME: &str = "USERPROFILE";
-
-const CONFIG_FILE: &str = ".chdiff-config.json";
+use super::{def::{CONFIG_FILE, ENV_HOME}, Config};
 
 impl Config {
     /// Create empty Config instance.

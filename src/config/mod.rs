@@ -1,6 +1,7 @@
-mod config;
+mod loader;
+mod def;
 
-pub use config::Config;
+pub use def::Config;
 
 #[cfg(test)]
 mod config_test;

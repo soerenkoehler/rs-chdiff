@@ -2,8 +2,8 @@ use clap::Parser;
 use std::path::PathBuf;
 
 use super::{
-    ArgsBackup, ArgsCreate, ArgsVerify, cli::Cli,
-    cli::Command::{Backup, Create, Verify},
+    ArgsBackup, ArgsCreate, ArgsVerify, def::Cli,
+    def::Command::{Backup, Create, Verify},
 };
 
 use crate::{Config, Dependencies, commands::MockCommandExecutor};
