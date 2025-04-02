@@ -1,7 +1,7 @@
 use super::CommandExecutor;
-use crate::{Dependencies, cli::ArgsVerify, filelist::FileList};
+use crate::{Dependencies, cli::ArgsVerify, filescanner::FileList};
 
-pub(crate) struct Verify {}
+pub struct Verify {}
 
 impl CommandExecutor<ArgsVerify> for Verify {
     fn execute(&self, deps: &Dependencies, args: ArgsVerify) {

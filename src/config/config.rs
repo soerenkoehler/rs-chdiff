@@ -1,6 +1,3 @@
-#[cfg(test)]
-mod config_test;
-
 use glob::Pattern;
 use serde::{Deserialize, Serialize};
 use std::{
@@ -10,11 +7,11 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use crate::filelist::PatternList;
+use crate::filescanner::PatternList;
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(deny_unknown_fields)]
-pub(crate) struct Config {
+pub struct Config {
     #[serde(rename = "exclude.absolute")]
     pub exclude_absolute: PatternList,
     #[serde(rename = "exclude.relative")]

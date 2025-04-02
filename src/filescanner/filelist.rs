@@ -1,8 +1,3 @@
-mod patternlist;
-
-#[cfg(test)]
-mod filelist_test;
-
 use std::{
     fs::{canonicalize, read_dir},
     io::Result,
@@ -11,9 +6,9 @@ use std::{
     thread,
 };
 
-pub(crate) use patternlist::PatternList;
+use super::PatternList;
 
-pub(crate) struct FileList {
+pub struct FileList {
     pub entries: Vec<PathBuf>,
 }
 

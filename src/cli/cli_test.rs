@@ -2,10 +2,11 @@ use clap::Parser;
 use std::path::PathBuf;
 
 use super::{
-    ArgsBackup, ArgsCreate, ArgsVerify, Cli,
-    Command::{Backup, Create, Verify},
+    ArgsBackup, ArgsCreate, ArgsVerify, cli::Cli,
+    cli::Command::{Backup, Create, Verify},
 };
-use crate::{Dependencies, commands::MockCommandExecutor, config::Config};
+
+use crate::{Config, Dependencies, commands::MockCommandExecutor};
 
 #[test]
 fn default_path_backup() {

@@ -10,7 +10,7 @@ use std::{
 };
 
 #[derive(PartialEq, Debug)]
-pub(crate) struct PatternList {
+pub struct PatternList {
     pub patterns: Vec<Pattern>,
 }
 

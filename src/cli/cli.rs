@@ -1,6 +1,3 @@
-#[cfg(test)]
-mod cli_test;
-
 use clap::{Args, CommandFactory, Parser, Subcommand, ValueEnum, crate_name, crate_version};
 use std::{ffi::OsString, path::PathBuf};
 
@@ -8,7 +5,7 @@ use crate::Dependencies;
 
 #[derive(Parser, Debug)]
 #[command(about, version, long_version = "Y", disable_version_flag = true)]
-pub(crate) struct Cli {
+pub struct Cli {
     #[command(subcommand)]
     pub cmd: Option<Command>,
     #[arg(long, help = "Print version")]
@@ -16,7 +13,7 @@ pub(crate) struct Cli {
 }
 
 #[derive(Subcommand, Debug)]
-pub(crate) enum Command {
+pub enum Command {
     #[command(visible_alias = "c")]
     Create(ArgsCreate),
     #[command(visible_alias = "v")]
@@ -26,32 +23,32 @@ pub(crate) enum Command {
 }
 
 #[derive(ValueEnum, Clone, Debug)]
-pub(crate) enum HashAlgorithm {
+pub enum HashAlgorithm {
     Sha256,
     Sha512,
 }
 
 #[derive(Args, Debug)]
-pub(crate) struct ArgsBackup {
+pub struct ArgsBackup {
     #[arg(default_value = ".")]
     pub path: PathBuf,
 }
 
 #[derive(Args, Debug)]
-pub(crate) struct ArgsCreate {
+pub struct ArgsCreate {
     #[arg(default_value = ".")]
     pub path: PathBuf,
-    #[arg(short, long, value_enum, ignore_case=true, default_value="sha256")]
+    #[arg(short, long, value_enum, ignore_case = true, default_value = "sha256")]
     pub algorithm: HashAlgorithm,
 }
 
 #[derive(Args, Debug)]
-pub(crate) struct ArgsVerify {
+pub struct ArgsVerify {
     #[arg(default_value = ".")]
     pub path: PathBuf,
 }
 
-pub(crate) fn parse<I>(deps: &Dependencies, args: I)
+pub fn parse<I>(deps: &Dependencies, args: I)
 where
     I: IntoIterator,
     I::Item: Into<OsString> + Clone,

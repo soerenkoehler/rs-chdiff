@@ -2,7 +2,7 @@ mod cli;
 mod commands;
 mod config;
 mod digest;
-mod filelist;
+mod filescanner;
 
 use std::env::args_os;
 
