@@ -16,13 +16,14 @@ Options:
 "#;
 
 pub const HELP_TEXT_CREATE: &str =
-r#"Usage: rs-chdiff create [PATH]
+r#"Usage: rs-chdiff create [OPTIONS] [PATH]
 
 Arguments:
   [PATH]  [default: .]
 
 Options:
-  -h, --help  Print help
+  -a, --algorithm <ALGORITHM>  [default: sha256] [possible values: sha256, sha512]
+  -h, --help                   Print help
 "#;
 
 pub const HELP_TEXT_VERIFY: &str =

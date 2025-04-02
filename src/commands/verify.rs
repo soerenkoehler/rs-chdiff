@@ -1,13 +1,19 @@
 use super::CommandExecutor;
-use crate::{cli::ArgsVerify, digest::filelist::FileList};
+use crate::{Dependencies, cli::ArgsVerify, filescanner::FileList};
 
-pub(crate) struct Verify {}
+pub struct Verify {}
 
 impl CommandExecutor<ArgsVerify> for Verify {
-    fn execute(&self, args: ArgsVerify) {
+    fn execute(&self, deps: &Dependencies, args: ArgsVerify) {
         println!("verify (wip) {:?}", args);
-        let mut files = FileList::from_dir(args.path).entries;
+        let mut files = FileList::from_path(
+            args.path,
+            &deps.config.exclude_absolute,
+            &deps.config.exclude_relative,
+        )
+        .unwrap()
+        .entries;
         files.sort();
-        files.into_iter().for_each(|x| println!("{}", x.display()));
+        files.iter().for_each(|x| println!("{}", x.display()));
     }
 }
