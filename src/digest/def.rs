@@ -1,3 +1,5 @@
-use std::{iter::Map, path::PathBuf};
+use std::{collections::HashMap, path::PathBuf};
 
-pub type Digest = Map<PathBuf, String>;
+pub struct Digest {
+    pub entries: HashMap<PathBuf, String>,
+}
