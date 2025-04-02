@@ -1,5 +1,6 @@
 mod calculator;
-mod digestfile;
+mod def;
+mod file;
 
 #[cfg(test)]
 mod digest_test;

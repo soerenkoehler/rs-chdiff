@@ -1,8 +1,8 @@
-mod filelist;
-mod patternlist;
+mod file;
+mod pattern;
 
-pub use patternlist::PatternList;
-pub use filelist::FileList;
+pub use pattern::PatternList;
+pub use file::FileList;
 
 #[cfg(test)]
 mod filescanner_test;
