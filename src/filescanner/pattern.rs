@@ -34,6 +34,7 @@ impl PatternList {
 
 impl Serialize for PatternList {
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        // TODO replace unwrap() with error handling
         let mut seq = serializer.serialize_seq(Some(self.patterns.len())).unwrap();
         self.patterns.iter().for_each(|p| {
             let _ = seq.serialize_element(p.as_str());

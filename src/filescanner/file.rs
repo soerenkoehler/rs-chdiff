@@ -57,11 +57,13 @@ impl FileList {
                     })
                     .collect::<Vec<_>>()
                     .into_iter()
+                    // TODO replace unwrap() with error handling
                     .for_each(|thread| thread.join().unwrap_or_default()),
                 _ => eprintln!("error accessing {}", path.display()),
             }
         } else if path.is_file() {
-            tx.send(path.to_path_buf()).unwrap();
+        // TODO replace unwrap() with error handling
+        tx.send(path.to_path_buf()).unwrap();
         }
     }
 }

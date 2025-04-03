@@ -39,6 +39,11 @@ impl Config {
         .unwrap_or(Self::new());
 
         // add built-in excludes
+        //
+        // TODO replace unwrap() with error handling
+        //
+        // TODO replace string literal with constant, possibly even list of
+        // patterns
         config
             .exclude_relative
             .push(Pattern::new(".chdiff.txt").unwrap());
@@ -47,6 +52,8 @@ impl Config {
     }
 
     /// Return the path to the users config file.
+    //
+    // TODO replace unwrap() with error handling
     pub fn get_config_path() -> PathBuf {
         Path::new(&env::var(ENV_HOME).unwrap()).join(CONFIG_FILE)
     }
