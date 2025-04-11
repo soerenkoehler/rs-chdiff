@@ -67,7 +67,7 @@ digest_test() {
     done
 }
 
-if [[ ! -e Cargo.toml && -e .git ]]; then
+if [[ ! -e Cargo.toml || ! -e .git ]]; then
     printf "not in project root\n"
     exit -1
 fi
