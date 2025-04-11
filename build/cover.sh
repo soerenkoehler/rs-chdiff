@@ -11,7 +11,12 @@ rm *.profdata *.profraw
 
 cargo install rustfilt
 
-RUSTFLAGS="-C instrument-coverage" cargo t
+OBJECTS=$( \
+    RUSTFLAGS="-C instrument-coverage" \
+    cargo t --jobs 1 --message-format=json \
+    | jq -r -R "fromjson? | select(.profile.test == true) | .filenames[]" \
+    | xargs -I {} printf "%s %s " "--object" {} \
+)
 
 "llvm-profdata$LLVM_VERSION" merge \
     --sparse \
@@ -23,4 +28,6 @@ RUSTFLAGS="-C instrument-coverage" cargo t
     --instr-profile=rs-chdiff.profdata \
     --ignore-filename-regex=/.cargo/registry \
     --ignore-filename-regex=/.rustup \
-    target/debug/rs-chdiff
+    $OBJECTS
+
+rm *.profdata *.profraw
