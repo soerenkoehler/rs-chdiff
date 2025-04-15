@@ -28,6 +28,10 @@ OBJECTS=$( \
     --instr-profile=rs-chdiff.profdata \
     --ignore-filename-regex=/.cargo/registry \
     --ignore-filename-regex=/.rustup \
+    --ignore-filename-regex=/tests/ \
+    --ignore-filename-regex=_test.rs$ \
+    --format=html \
+    -o coverage \
     $OBJECTS
 
 rm *.profdata *.profraw
