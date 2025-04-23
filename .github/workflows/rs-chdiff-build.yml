@@ -19,7 +19,7 @@ jobs:
         run: rustup target list --installed
 
       - name: "generate test data"
-        run: ./build/generate_testdata.sh
+        run: ./build/generate-testdata.sh
 
       - name: "test"
         run: ./build/test.sh
