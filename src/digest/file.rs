@@ -6,8 +6,6 @@ use std::{
     str::FromStr,
 };
 
-use regex::Regex;
-
 use super::def::{Digest, REGEX_DIGEST_LINE};
 
 impl Digest {
@@ -18,8 +16,6 @@ impl Digest {
     }
 
     pub fn from_file(file: &PathBuf) -> Self {
-        let re_digest_line = Regex::new(REGEX_DIGEST_LINE).unwrap();
-
         Digest {
             entries: BufReader::new(match OpenOptions::new().read(true).open(file) {
                 Ok(file) => file,
@@ -28,15 +24,15 @@ impl Digest {
             .lines()
             .into_iter()
             .filter_map(|line| match line {
-                Ok(line) => Self::digest_entry(line, &re_digest_line),
+                Ok(line) => Self::entry_from_line(line),
                 Err(err) => panic!("can't read digest file: {}", err),
             })
             .collect(),
         }
     }
 
-    fn digest_entry(line: String, re: &Regex) -> Option<(PathBuf, String)> {
-        let Some(captures) = re.captures(&line) else {
+    fn entry_from_line(line: String) -> Option<(PathBuf, String)> {
+        let Some(captures) = REGEX_DIGEST_LINE.captures(&line) else {
             eprintln!("invalid digest line: {}", line);
             return None;
         };
