@@ -2,14 +2,14 @@
 
 LLVM_VERSION="-19"
 
-if [[ ! -e Cargo.toml || ! -e .git ]]; then
-    printf "not in project root\n"
-    exit -1
-fi
+# if [[ ! -e Cargo.toml || ! -e .git ]]; then
+#     printf "not in project root\n"
+#     exit -1
+# fi
 
-rm *.profdata *.profraw
+# rm *.profdata *.profraw
 
-cargo install rustfilt
+# cargo install rustfilt
 
 OBJECTS=$( \
     RUSTFLAGS="-C instrument-coverage" \
@@ -34,4 +34,4 @@ OBJECTS=$( \
     -o coverage \
     $OBJECTS
 
-rm *.profdata *.profraw
+# rm *.profdata *.profraw
