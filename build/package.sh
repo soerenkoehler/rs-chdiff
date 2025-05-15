@@ -30,3 +30,4 @@ for BIN in $BINARIES; do
 
     printf "\n"
 done
+# TODO add coverage artifact
