@@ -14,22 +14,26 @@ RUN apt-get update && \
         build-essential \
         curl \
         ca-certificates \
+        gnupg \
         jq \
         less \
         libssl-dev \
         lsb-release \
+        nginx \
         software-properties-common \
-        gnupg
+        vim
 
 # Install LLVM 19
 RUN curl -L https://apt.llvm.org/llvm.sh | bash -s 19
 ENV PATH="$PATH:/usr/lib/llvm-19/bin"
+ENV LD_LIBRARY_PATH="/usr/lib/llvm-19/lib"
 
-# Install Rust using rustup.  We do this *after* LLVM installation.
+# Install Rust using rustup.  We do this *after* LLVM installation
 RUN curl -sSf https://sh.rustup.rs | bash -s -- -y
 ENV PATH="/app/.cargo/bin:$PATH"
 
-# Install Rust.
+# Install Rust
+COPY rust-toolchain.toml rust-toolchain.toml
 RUN rustup toolchain install
 RUN rustup default
 RUN cargo install rustfilt

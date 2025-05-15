@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ ! -e Cargo.toml || ! -e .git ]]; then
+if [[ ! -e Cargo.toml ]]; then
     printf "not in project root\n"
     exit -1
 fi

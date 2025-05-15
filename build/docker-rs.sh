@@ -1,11 +1,14 @@
 #!/bin/bash
 
-if [[ ! -e Cargo.toml || ! -e .git ]]; then
+if [[ ! -e Cargo.toml ]]; then
     printf "not in project root\n"
     exit -1
 fi
 
-docker run -it \
+mkdir -p coverage
+
+docker run \
+  -p 8888:80 \
   --mount type=bind,src=.,dst=/app/input,ro \
   --mount type=bind,src=./coverage,dst=/app/output \
-  --rm rs-chdiff:latest bash
+  --rm rs-chdiff:latest bash cover.sh
