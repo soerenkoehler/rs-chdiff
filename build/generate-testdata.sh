@@ -12,7 +12,7 @@ create_dir() {
 }
 
 create_file() {
-    dd if=/dev/urandom of=$1 bs=1MiB count=$2 status=none
+    dd if=/dev/urandom of=$1 bs=1MiB count=$2 iflag=count_bytes status=none
 }
 
 filelist_test() {
@@ -55,8 +55,8 @@ filelist_test() {
 
 digest_test() {
     create_file empty.dat 0
-    create_file small.dat 1KiB
-    create_file large.dat 1GiB
+    create_file small.dat 1K
+    create_file large.dat 1G
 
     cd ..
     truncate -s 0 sha256.txt
