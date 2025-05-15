@@ -47,4 +47,4 @@ cp -r --no-preserve=mode coverage/* /var/www/html
 
 popd
 
-nginx -g "daemon off;"
+nginx -g "daemon off; master_process off;"

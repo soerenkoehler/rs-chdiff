@@ -11,4 +11,4 @@ docker run \
   -p 8888:80 \
   --mount type=bind,src=.,dst=/app/input,ro \
   --mount type=bind,src=./coverage,dst=/app/output \
-  --rm rs-chdiff:latest bash cover.sh
+  --rm -it rs-chdiff:latest bash cover.sh
