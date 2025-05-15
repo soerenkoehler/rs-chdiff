@@ -2,14 +2,17 @@
 
 LLVM_VERSION="-19"
 
-# if [[ ! -e Cargo.toml || ! -e .git ]]; then
-#     printf "not in project root\n"
-#     exit -1
-# fi
+mkdir -p work
 
-# rm *.profdata *.profraw
+rm work/* output/*
 
-# cargo install rustfilt
+find . -maxdepth 1 -type d \
+    -not -name ".*" \
+    -not -name "coverage" \
+    -not -name "generated" \
+    -not -name "target" \
+    -printf "%f\n" \
+| xargs -I {DIR} cp -r input/{DIR} work
 
 OBJECTS=$( \
     RUSTFLAGS="-C instrument-coverage" \
@@ -28,10 +31,9 @@ OBJECTS=$( \
     --instr-profile=rs-chdiff.profdata \
     --ignore-filename-regex=/.cargo/registry \
     --ignore-filename-regex=/.rustup \
+    --ignore-filename-regex=/rustc \
     --ignore-filename-regex=/tests/ \
     --ignore-filename-regex=_test.rs$ \
     --format=html \
-    -o coverage \
+    -o ../output \
     $OBJECTS
-
-# rm *.profdata *.profraw
