@@ -22,9 +22,9 @@ macro_rules! to_absolute_pattern {
 }
 
 #[test]
-fn bad_root_path() {
+fn non_existant_root_path() {
     match FileList::from_path(
-        PathBuf::from_str("tests/filelist_data/non-existant").unwrap(),
+        PathBuf::from_str("generated/filelist_test/non-existant").unwrap(),
         &PatternList::new(),
         &PatternList::new(),
     ) {

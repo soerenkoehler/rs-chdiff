@@ -16,6 +16,9 @@ create_file() {
 }
 
 filelist_test() {
+    chmod 666 dir-unreachable
+    rmdir dir-unreachable
+
     for N in {0..15}; do
         mkdir -p dir$(($N/8%2))/dir$(($N/4%2))/dir$(($N/2%2))/dir$(($N%2))
     done
@@ -25,6 +28,9 @@ filelist_test() {
             create_file $DIR/file$N.dat 0
         done
     done
+
+    mkdir -p dir-unreachable
+    chmod 666 dir-unreachable
 
     find . -type f \
     | sed 's/^\.\///' \

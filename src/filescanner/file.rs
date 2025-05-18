@@ -24,22 +24,21 @@ impl FileList {
             Err(err) => return Err(err),
         };
 
+        let filter_path = |path: PathBuf| match path.strip_prefix(&root_path) {
+            Ok(path_rel)
+                if !exclude_absolute.matches(&path) && !exclude_relative.matches(path_rel) =>
+            {
+                Some(path_rel.to_path_buf())
+            }
+            _ => None,
+        };
+
         let (tx, rx) = channel();
 
         Self::process_path(tx, &root_path);
 
         Ok(Self {
-            entries: rx
-                .iter()
-                .filter_map(|path| {
-                    if let Ok(path_rel) = path.strip_prefix(&root_path) {
-                        if !exclude_absolute.matches(&path) && !exclude_relative.matches(path_rel) {
-                            return Some(path_rel.to_path_buf());
-                        }
-                    }
-                    None
-                })
-                .collect(),
+            entries: rx.iter().filter_map(filter_path).collect(),
         })
     }
 
@@ -62,8 +61,8 @@ impl FileList {
                 _ => eprintln!("error accessing {}", path.display()),
             }
         } else if path.is_file() {
-        // TODO replace unwrap() with error handling
-        tx.send(path.to_path_buf()).unwrap();
+            // TODO replace unwrap() with error handling
+            tx.send(path.to_path_buf()).unwrap();
         }
     }
 }
