@@ -46,4 +46,4 @@ RUN apt-get clean && \
         /tmp/*
 
 # Install custom scripts
-COPY cover.sh cover.sh
+COPY *.sh .

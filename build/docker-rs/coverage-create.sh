@@ -1,6 +1,7 @@
 #!/bin/bash
 
 LLVM_VERSION="-19"
+export RUSTFLAGS="-C instrument-coverage"
 
 mkdir -p work
 
@@ -16,10 +17,18 @@ find /app/input -mindepth 1 -maxdepth 1 \
 
 pushd work
 
-./build/generate_testdata.sh
+./build/generate-testdata.sh
+
+mkdir -p coverage
+
+cargo t --jobs 1 >/app/output/test-protocol.txt
+
+if [[ $? != 0 ]]; then
+    printf "Tests failed\n"
+    exit -1
+fi
 
 OBJECTS=$( \
-    RUSTFLAGS="-C instrument-coverage" \
     cargo t --jobs 1 --message-format=json \
     | jq -r -R "fromjson? | select(.profile.test == true) | .filenames[]" \
     | xargs -I {} printf "%s %s " "--object" {} \
@@ -43,8 +52,5 @@ OBJECTS=$( \
     $OBJECTS
 
 cp -r --no-preserve=mode coverage/* /app/output
-cp -r --no-preserve=mode coverage/* /var/www/html
 
 popd
-
-nginx -g "daemon off; master_process off;"
