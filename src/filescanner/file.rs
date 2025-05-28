@@ -3,7 +3,7 @@ use std::{
     io::Result,
     path::{Path, PathBuf},
     sync::mpsc::{Sender, channel},
-    thread,
+    thread::{self},
 };
 
 use super::PatternList;
@@ -42,17 +42,22 @@ impl FileList {
         })
     }
 
+    pub(super) fn result_to_option<T>(entry: Result<T>) -> Option<T> {
+        match entry {
+            Ok(entry) => Some(entry),
+            _ => None,
+        }
+    }
+
     fn process_path<P: AsRef<Path>>(tx: Sender<PathBuf>, path: P) {
         let path = path.as_ref();
         if path.is_dir() {
             match read_dir(path) {
                 Ok(dir_entries) => dir_entries
-                    .filter_map(|entry| match entry {
-                        Ok(entry) => Some({
-                            let tx_clone: Sender<PathBuf> = tx.clone();
-                            thread::spawn(move || Self::process_path(tx_clone, entry.path()))
-                        }),
-                        _ => None,
+                    .filter_map(Self::result_to_option)
+                    .map(|entry| {
+                        let tx_clone: Sender<PathBuf> = tx.clone();
+                        thread::spawn(move || Self::process_path(tx_clone, entry.path()))
                     })
                     .collect::<Vec<_>>()
                     .into_iter()
@@ -62,7 +67,9 @@ impl FileList {
             }
         } else if path.is_file() {
             // TODO replace unwrap() with error handling
-            tx.send(path.to_path_buf()).unwrap();
+            let _ = tx.send(path.to_path_buf());
+        } else {
+            eprintln!("neither file nor directory: {}", path.display())
         }
     }
 }

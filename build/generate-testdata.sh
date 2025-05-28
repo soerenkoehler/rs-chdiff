@@ -16,9 +16,6 @@ create_file() {
 }
 
 filelist_test() {
-    chmod 666 dir-unreachable
-    rmdir dir-unreachable
-
     for N in {0..15}; do
         mkdir -p dir$(($N/8%2))/dir$(($N/4%2))/dir$(($N/2%2))/dir$(($N%2))
     done
@@ -29,34 +26,40 @@ filelist_test() {
         done
     done
 
-    mkdir -p dir-unreachable
-    chmod 666 dir-unreachable
-
     find . -type f \
     | sed 's/^\.\///' \
     | sort >../all_files.txt
 
     find . -type f \
-    -not -path "./file3.dat"  \
+    -not -path "./file3.dat" \
     | sed 's/^\.\///' \
     | sort >../specific_one_pattern.txt
 
     find . -type f \
-    -not -path "./dir0/file2.dat"  \
-    -not -path "./dir1/file4.dat"  \
+    -not -path "./dir0/file2.dat" \
+    -not -path "./dir1/file4.dat" \
     | sed 's/^\.\///' \
     | sort >../specific_two_patterns.txt
 
     find . -type f \
-    -not -path "**/file3.dat"  \
+    -not -path "**/file3.dat" \
     | sed 's/^\.\///' \
     | sort >../wildcard_one_pattern.txt
 
     find . -type f \
-    -not -path "**/dir0/file2.dat"  \
-    -not -path "**/dir1/file4.dat"  \
+    -not -path "**/dir0/file2.dat" \
+    -not -path "**/dir1/file4.dat" \
     | sed 's/^\.\///' \
     | sort >../wildcard_two_patterns.txt
+}
+
+filelist_test_baddir() {
+    mkdir -p dir-unreachable
+    chmod 000 dir-unreachable
+}
+
+filelist_test_badsymlink() {
+    ln -s file1 symlink-to-file1
 }
 
 digest_test() {
@@ -78,5 +81,10 @@ if [[ ! -e Cargo.toml ]]; then
     exit -1
 fi
 
+chmod -R 744 generated
+rm -rf generated/*
+
 create filelist_test
+create filelist_test_baddir
+create filelist_test_badsymlink
 create digest_test

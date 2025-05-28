@@ -1,9 +1,9 @@
 mod common;
 
+use predicates::str::contains;
 use std::path::Path;
 
 use common::{run_in_dir, run_with_config};
-use predicates::str::contains;
 
 #[test]
 fn missing_config_file() {
@@ -47,21 +47,27 @@ fn unexpected_attribute() {
 fn invalid_type_int_abs() {
     run_with_config("tests/config_data/invalid_type_int_abs.json", &["v"])
         .success()
-        .stderr(contains("invalid type: integer `0`, expected a sequence of valid glob patterns at line 2"));
+        .stderr(contains(
+            "invalid type: integer `0`, expected a sequence of valid glob patterns at line 2",
+        ));
 }
 
 #[test]
 fn invalid_type_map_abs() {
     run_with_config("tests/config_data/invalid_type_map_abs.json", &["v"])
         .success()
-        .stderr(contains("invalid type: map, expected a sequence of valid glob patterns at line 2"));
+        .stderr(contains(
+            "invalid type: map, expected a sequence of valid glob patterns at line 2",
+        ));
 }
 
 #[test]
 fn invalid_type_str_abs() {
     run_with_config("tests/config_data/invalid_type_str_abs.json", &["v"])
         .success()
-        .stderr(contains("invalid type: string \"string\", expected a sequence of valid glob patterns at line 2"));
+        .stderr(contains(
+            "invalid type: string \"string\", expected a sequence of valid glob patterns at line 2",
+        ));
 }
 
 #[test]
@@ -69,19 +75,25 @@ fn invalid_type_str_abs() {
 fn invalid_type_int_rel() {
     run_with_config("tests/config_data/invalid_type_int_rel.json", &["v"])
         .success()
-        .stderr(contains("invalid type: integer `0`, expected a sequence of valid glob patterns at line 4"));
+        .stderr(contains(
+            "invalid type: integer `0`, expected a sequence of valid glob patterns at line 4",
+        ));
 }
 
 #[test]
 fn invalid_type_map_rel() {
     run_with_config("tests/config_data/invalid_type_map_rel.json", &["v"])
         .success()
-        .stderr(contains("invalid type: map, expected a sequence of valid glob patterns at line 3"));
+        .stderr(contains(
+            "invalid type: map, expected a sequence of valid glob patterns at line 3",
+        ));
 }
 
 #[test]
 fn invalid_type_str_rel() {
     run_with_config("tests/config_data/invalid_type_str_rel.json", &["v"])
         .success()
-        .stderr(contains("invalid type: string \"string\", expected a sequence of valid glob patterns at line 3"));
+        .stderr(contains(
+            "invalid type: string \"string\", expected a sequence of valid glob patterns at line 3",
+        ));
 }

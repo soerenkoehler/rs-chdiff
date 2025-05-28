@@ -1,7 +1,7 @@
 use glob::Pattern;
 use std::{
     fs::OpenOptions,
-    io::{BufRead, BufReader, ErrorKind},
+    io::{BufRead, BufReader, Error, ErrorKind},
     path::PathBuf,
     str::FromStr,
 };
@@ -31,6 +31,20 @@ fn non_existant_root_path() {
         Err(err) => assert_eq!(err.kind(), ErrorKind::NotFound),
         _ => panic!("should report non-rexistant root path"),
     };
+}
+
+#[test]
+fn result_to_option_ok() {
+    let expected = "value";
+    assert_eq!(Some(expected), FileList::result_to_option(Ok(expected)))
+}
+
+#[test]
+fn result_to_option_err() {
+    assert_eq!(
+        None,
+        FileList::result_to_option::<Option<()>>(Err(Error::new(ErrorKind::Other, "x")))
+    )
 }
 
 #[test]

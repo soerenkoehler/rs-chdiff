@@ -2,9 +2,10 @@ mod cli_data;
 mod common;
 
 use clap::{crate_name, crate_version};
+use predicates::{ord::eq, str::contains};
+
 use cli_data::*;
 use common::run_binary;
-use predicates::{ord::eq, str::contains};
 
 #[test]
 fn help() {

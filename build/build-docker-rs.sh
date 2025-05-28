@@ -5,4 +5,10 @@ if [[ ! -e Cargo.toml ]]; then
     exit -1
 fi
 
-docker build ./build/docker-rs -t rs-chdiff
+docker build \
+       -t rs-chdiff \
+       --build-arg USER_ID=$(id -u) \
+       --build-arg GROUP_ID=$(id -g) \
+       ./build/docker-rs
+
+docker images -aqf "dangling=true" | xargs -I {} docker rmi {}

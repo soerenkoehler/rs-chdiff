@@ -4,5 +4,11 @@
             "path": "."
         }
     ],
-    "settings": {}
+    "settings": {
+        "files.exclude": {
+            "coverage": true,
+            "generated": true,
+            "target": true
+        }
+    }
 }
