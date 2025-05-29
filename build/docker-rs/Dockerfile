@@ -28,19 +28,8 @@ RUN apt-get update && \
 
 # install LLVM 20
 RUN curl -L https://apt.llvm.org/llvm.sh | bash -s 20
-ENV PATH="$PATH:/usr/lib/llvm-19/bin"
-ENV LD_LIBRARY_PATH="/usr/lib/llvm-19/lib"
-
-# install Rust using rustup
-ENV CARGO_HOME="$APP_HOME/.cargo"
-RUN curl -sSf https://sh.rustup.rs | bash -s -- -y >/app/rust.log
-ENV PATH="$CARGO_HOME/bin:$PATH"
-
-# Setup Rust
-COPY rust-toolchain.toml rust-toolchain.toml
-RUN rustup toolchain install
-RUN rustup default
-RUN cargo install rustfilt
+ENV PATH="$PATH:/usr/lib/llvm-20/bin"
+ENV LD_LIBRARY_PATH="/usr/lib/llvm-20/lib"
 
 # clean up unnecessary files and directories to reduce image size
 RUN apt-get clean && \
@@ -76,6 +65,17 @@ RUN mv $CONF $CONF.old && \
 
 # switch to non-root user
 USER $USER_NAME
+
+# install Rust using rustup
+ENV CARGO_HOME="$APP_HOME/.cargo"
+RUN curl -sSf https://sh.rustup.rs | bash -s -- -y >/app/rust.log
+ENV PATH="$CARGO_HOME/bin:$PATH"
+
+# Setup Rust
+COPY rust-toolchain.toml rust-toolchain.toml
+RUN rustup toolchain install
+RUN rustup default
+RUN cargo install rustfilt
 
 # install custom scripts
 COPY *.sh .

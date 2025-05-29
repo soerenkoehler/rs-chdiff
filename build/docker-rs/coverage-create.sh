@@ -1,51 +1,52 @@
 #!/bin/bash
 
-LLVM_VERSION="-20"
-export RUSTFLAGS="-C instrument-coverage"
+./coverage-init.sh
 
-mkdir -p work
+pushd /app/work
 
-rm -rf work/* output/*
+COVERAGE_DIR=$(readlink -f "coverage")
+PROFRAW_DIR="$COVERAGE_DIR/profraw"
+PROFDATA_FILE="$COVERAGE_DIR/coverage.profdata"
+HTML_REPORT_DIR="$COVERAGE_DIR/html"
 
-find /app/input -mindepth 1 -maxdepth 1 \
-    -not -name ".*" \
-    -not -name "coverage" \
-    -not -name "generated" \
-    -not -name "rust-toolchain.toml" \
-    -not -name "target" \
-| xargs -I {SRC} cp -r {SRC} work/
+CRATE_NAME="rs-chdiff"
+CRATE_NAME_FS_SAFE=$(echo "$CRATE_NAME" | tr '-' '_')
 
-pushd work
+export RUSTFLAGS="-C instrument-coverage -C debuginfo=2"
+export LLVM_PROFILE_FILE="$PROFRAW_DIR/$CRATE_NAME_FS_SAFE-%p-%m.profraw"
 
-./build/generate-testdata.sh
+cargo clean
+rm -rf "$COVERAGE_DIR"
+mkdir -p "$PROFRAW_DIR"
+mkdir -p "$HTML_REPORT_DIR"
 
-mkdir -p coverage
+OBJECTS=$( \
+    cargo t --jobs 1 --message-format=json \
+    | jq -r -R "fromjson? | select(.profile.test == true) | .filenames[]" \
+    | xargs -I {} printf "%s %s " "-object" {}; \
+    find target/debug -type f \( -name "$CRATE_NAME*" -or -name "$CRATE_NAME_FS_SAFE*" \) -not -name "*.d" \
+    | xargs -I {} printf "%s %s " "-object" {} \
+)
 
-# OBJECTS=$( \
-#     cargo t --jobs 1 --message-format=json error_output_on_bad_symlink \
-#     | jq -r -R "fromjson? | select(.profile.test == true) | .filenames[]" \
-#     | xargs -I {} printf "%s %s " "--object" {} \
-# )
+printf "\n\n%s\n\n" "$OBJECTS"
 
-# printf "\n%s\n" "$OBJECTS"
+llvm-profdata-20 merge \
+    -sparse "$PROFRAW_DIR"/* \
+    -o "$PROFDATA_FILE"
 
-# "llvm-profdata$LLVM_VERSION" merge \
-#     --sparse \
-#     *.profraw \
-#     -o rs-chdiff.profdata
+llvm-cov-20 show \
+    --format=html \
+    --output-dir="$HTML_REPORT_DIR" \
+    --show-line-counts-or-regions \
+    --show-instantiations=true \
+    --show-regions=true \
+    -Xdemangler=rustfilt \
+    --instr-profile="$PROFDATA_FILE" \
+    --ignore-filename-regex='/.cargo' \
+    --ignore-filename-regex='/.rustup/' \
+    --ignore-filename-regex='/rustc/' \
+    $OBJECTS
 
-# "llvm-cov$LLVM_VERSION" show \
-#     -Xdemangler=rustfilt \
-#     --instr-profile=rs-chdiff.profdata \
-#     --ignore-filename-regex=/.cargo/ \
-#     --ignore-filename-regex=/.rustup/ \
-#     --ignore-filename-regex=/rustc/ \
-#     --ignore-filename-regex=/tests/ \
-#     --ignore-filename-regex=_test.rs$ \
-#     --format=html \
-#     --output-dir=coverage \
-#     $OBJECTS
-
-# cp -r coverage/* /app/output
+cp -r "$HTML_REPORT_DIR"/* /app/output
 
 popd

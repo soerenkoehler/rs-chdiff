@@ -24,9 +24,7 @@ pub fn run_with_config(cfg: &str, args: &[&str]) -> Assert {
 }
 
 pub fn run_in_dir(cwd: &PathBuf, args: &[&str]) -> Assert {
-    let path = assert_cmd::cargo::cargo_bin(crate_name!());
-    println!("DEBUG: binary={}", path.display());
-    Command::new(path)
+    Command::new(assert_cmd::cargo::cargo_bin(crate_name!()))
         .args(args)
         .current_dir(cwd)
         .env(ENV_HOME, cwd)

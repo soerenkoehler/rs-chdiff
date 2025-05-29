@@ -81,7 +81,7 @@ if [[ ! -e Cargo.toml ]]; then
     exit -1
 fi
 
-chmod -R 744 generated
+chmod -Rf 744 generated
 rm -rf generated/*
 
 create filelist_test
