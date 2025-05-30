@@ -46,7 +46,7 @@ llvm-cov-20 show \
     --ignore-filename-regex='/.rustup/' \
     --ignore-filename-regex='/rustc/' \
     --ignore-filename-regex='/tests/' \
-    --ignore-filename-regex='_test$' \
+    --ignore-filename-regex='_test.rs$' \
     $OBJECTS
 
 cp -r "$HTML_REPORT_DIR"/* /app/output

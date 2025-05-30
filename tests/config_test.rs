@@ -23,24 +23,24 @@ fn empty_file() {
 }
 
 #[test]
-fn missing_exclude_absolute() {
-    run_with_config("tests/config_data/missing_exclude_absolute.json", &["v"])
+fn unexpected_attribute() {
+    run_with_config("tests/config_data/unexpected_attribute.json", &["v"])
+        .success()
+        .stderr(contains("unknown field `other.attribute`"));
+}
+
+#[test]
+fn missing_exclude_abs() {
+    run_with_config("tests/config_data/missing_exclude_abs.json", &["v"])
         .success()
         .stderr(contains("missing field `exclude.absolute`"));
 }
 
 #[test]
-fn missing_exclude_relative() {
-    run_with_config("tests/config_data/missing_exclude_relative.json", &["v"])
+fn missing_exclude_rel() {
+    run_with_config("tests/config_data/missing_exclude_rel.json", &["v"])
         .success()
         .stderr(contains("missing field `exclude.relative`"));
-}
-
-#[test]
-fn unexpected_attribute() {
-    run_with_config("tests/config_data/unexpected_attribute.json", &["v"])
-        .success()
-        .stderr(contains("unknown field `other.attribute`"));
 }
 
 #[test]
@@ -49,24 +49,6 @@ fn invalid_type_int_abs() {
         .success()
         .stderr(contains(
             "invalid type: integer `0`, expected a sequence of valid glob patterns at line 2",
-        ));
-}
-
-#[test]
-fn invalid_type_map_abs() {
-    run_with_config("tests/config_data/invalid_type_map_abs.json", &["v"])
-        .success()
-        .stderr(contains(
-            "invalid type: map, expected a sequence of valid glob patterns at line 2",
-        ));
-}
-
-#[test]
-fn invalid_type_str_abs() {
-    run_with_config("tests/config_data/invalid_type_str_abs.json", &["v"])
-        .success()
-        .stderr(contains(
-            "invalid type: string \"string\", expected a sequence of valid glob patterns at line 2",
         ));
 }
 
@@ -81,6 +63,15 @@ fn invalid_type_int_rel() {
 }
 
 #[test]
+fn invalid_type_map_abs() {
+    run_with_config("tests/config_data/invalid_type_map_abs.json", &["v"])
+        .success()
+        .stderr(contains(
+            "invalid type: map, expected a sequence of valid glob patterns at line 2",
+        ));
+}
+
+#[test]
 fn invalid_type_map_rel() {
     run_with_config("tests/config_data/invalid_type_map_rel.json", &["v"])
         .success()
@@ -90,10 +81,37 @@ fn invalid_type_map_rel() {
 }
 
 #[test]
+fn invalid_type_str_abs() {
+    run_with_config("tests/config_data/invalid_type_str_abs.json", &["v"])
+        .success()
+        .stderr(contains(
+            "invalid type: string \"string\", expected a sequence of valid glob patterns at line 2",
+        ));
+}
+
+#[test]
 fn invalid_type_str_rel() {
     run_with_config("tests/config_data/invalid_type_str_rel.json", &["v"])
         .success()
         .stderr(contains(
             "invalid type: string \"string\", expected a sequence of valid glob patterns at line 3",
+        ));
+}
+
+#[test]
+fn invalid_list_abs() {
+    run_with_config("tests/config_data/invalid_list_abs.json", &["v"])
+        .success()
+        .stderr(contains(
+            "Reading config file: expected value at line 2 column 26",
+        ));
+}
+
+#[test]
+fn invalid_list_rel() {
+    run_with_config("tests/config_data/invalid_list_rel.json", &["v"])
+        .success()
+        .stderr(contains(
+            "Reading config file: expected value at line 4 column 1",
         ));
 }
