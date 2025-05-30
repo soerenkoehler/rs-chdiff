@@ -1,8 +1,11 @@
 #!/bin/bash
 
+rm -rf /var/www/html/*
+
 ./coverage-create.sh
 
 if [[ $? != 0 ]]; then
+    printf "could not create coverage\n"
     exit -1
 fi
 

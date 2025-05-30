@@ -1,10 +1,22 @@
 // TODO integration test expecting stderr on unreachable directory
 mod common;
 
-use predicates::ord::eq;
+use predicates::{ord::eq, str::starts_with};
 use std::fs;
 
 use common::run_binary;
+
+#[test]
+fn error_output_on_bad_root_dir() {
+    let path = fs::canonicalize("./generated/filelist_test_baddir/data")
+        .unwrap()
+        .join("non-existant");
+    let path = path.to_str().unwrap();
+    let expected = format!("error accessing {}: No such file or directory", path);
+    run_binary(&["v", path])
+        .success()
+        .stderr(starts_with(expected));
+}
 
 #[test]
 fn error_output_on_bad_dir() {

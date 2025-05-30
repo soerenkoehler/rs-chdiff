@@ -6,12 +6,17 @@ pub struct Verify {}
 impl CommandExecutor<ArgsVerify> for Verify {
     fn execute(&self, deps: &Dependencies, args: ArgsVerify) {
         println!("verify (wip) {:?}", args);
-        let mut files = FileList::from_path(
-            args.path,
+        let mut files = match FileList::from_path(
+            &args.path,
             &deps.config.exclude_absolute,
             &deps.config.exclude_relative,
-        )
-        .unwrap()
+        ) {
+            Ok(value) => value,
+            Err(err) => {
+                eprintln!("error accessing {}: {} \n", args.path.display(), err);
+                return;
+            }
+        }
         .entries;
         files.sort();
         files.iter().for_each(|x| println!("{}", x.display()));

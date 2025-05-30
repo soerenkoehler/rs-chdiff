@@ -14,7 +14,7 @@ pub struct FileList {
 
 impl FileList {
     pub fn from_path(
-        root_path: PathBuf,
+        root_path: &PathBuf,
         exclude_absolute: &PatternList,
         exclude_relative: &PatternList,
     ) -> Result<Self> {
@@ -24,29 +24,23 @@ impl FileList {
             Err(err) => return Err(err),
         };
 
-        let filter_path = |path: PathBuf| match path.strip_prefix(&root_path) {
-            Ok(path_rel)
-                if !exclude_absolute.matches(&path) && !exclude_relative.matches(path_rel) =>
-            {
-                Some(path_rel.to_path_buf())
-            }
-            _ => None,
-        };
-
         let (tx, rx) = channel();
 
         Self::process_path(tx, &root_path);
 
         Ok(Self {
-            entries: rx.iter().filter_map(filter_path).collect(),
+            entries: rx
+                .iter()
+                .filter_map(|path: PathBuf| {
+                    let path_rel = path.strip_prefix(&root_path).unwrap();
+                    if !exclude_absolute.matches(&path) && !exclude_relative.matches(path_rel) {
+                        Some(path_rel.to_path_buf())
+                    } else {
+                        None
+                    }
+                })
+                .collect(),
         })
-    }
-
-    pub(super) fn result_to_option<T>(entry: Result<T>) -> Option<T> {
-        match entry {
-            Ok(entry) => Some(entry),
-            _ => None,
-        }
     }
 
     fn process_path<P: AsRef<Path>>(tx: Sender<PathBuf>, path: P) {
@@ -57,7 +51,7 @@ impl FileList {
                     .filter_map(Self::result_to_option)
                     .map(|entry| {
                         let tx_clone: Sender<PathBuf> = tx.clone();
-                        thread::spawn(move || Self::process_path(tx_clone, entry.path()))
+                        thread::spawn(move || Self::process_path(tx_clone, &entry.path()))
                     })
                     .collect::<Vec<_>>()
                     .into_iter()
@@ -70,6 +64,13 @@ impl FileList {
             let _ = tx.send(path.to_path_buf());
         } else {
             eprintln!("neither file nor directory: {}", path.display())
+        }
+    }
+
+    pub(super) fn result_to_option<T>(entry: Result<T>) -> Option<T> {
+        match entry {
+            Ok(entry) => Some(entry),
+            _ => None,
         }
     }
 }

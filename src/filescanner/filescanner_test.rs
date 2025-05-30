@@ -1,6 +1,6 @@
 use glob::Pattern;
 use std::{
-    fs::OpenOptions,
+    fs::{DirEntry, OpenOptions, read_dir},
     io::{BufRead, BufReader, Error, ErrorKind},
     path::PathBuf,
     str::FromStr,
@@ -24,7 +24,7 @@ macro_rules! to_absolute_pattern {
 #[test]
 fn non_existant_root_path() {
     match FileList::from_path(
-        PathBuf::from_str("generated/filelist_test/non-existant").unwrap(),
+        &PathBuf::from_str("generated/filelist_test/non-existant").unwrap(),
         &PatternList::new(),
         &PatternList::new(),
     ) {
@@ -35,16 +35,21 @@ fn non_existant_root_path() {
 
 #[test]
 fn result_to_option_ok() {
-    let expected = "value";
-    assert_eq!(Some(expected), FileList::result_to_option(Ok(expected)))
+    let expected = read_dir(".").unwrap().next().unwrap().unwrap();
+    let expected_path=expected.path();
+    match FileList::result_to_option::<DirEntry>(Ok(expected)) {
+        Some(entry) => assert_eq!(entry.path(), expected_path),
+        None => panic!("should produce Some() value"),
+    }
 }
 
 #[test]
 fn result_to_option_err() {
-    assert_eq!(
-        None,
-        FileList::result_to_option::<Option<()>>(Err(Error::new(ErrorKind::Other, "x")))
-    )
+    let expected = Error::new(ErrorKind::Other, "x");
+    match FileList::result_to_option::<DirEntry>(Err(expected)) {
+        Some(_) => panic!("should produce Err value"),
+        None => (),
+    };
 }
 
 #[test]
@@ -124,7 +129,7 @@ fn absolute_wildcard_two_pattern() {
 
 fn assert_filelist(expect_file: &str, exclude_absolute: &[&str], exclude_relative: &[&str]) {
     let mut actual = FileList::from_path(
-        PathBuf::from_str("generated/filelist_test/data").unwrap(),
+        &PathBuf::from_str("generated/filelist_test/data").unwrap(),
         &to_patternlist(exclude_absolute),
         &to_patternlist(exclude_relative),
     )

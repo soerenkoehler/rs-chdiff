@@ -12,7 +12,7 @@ HTML_REPORT_DIR="$COVERAGE_DIR/html"
 CRATE_NAME="rs-chdiff"
 CRATE_NAME_FS_SAFE=$(echo "$CRATE_NAME" | tr '-' '_')
 
-export RUSTFLAGS="-C instrument-coverage -C debuginfo=2"
+export RUSTFLAGS="-C instrument-coverage"
 export LLVM_PROFILE_FILE="$PROFRAW_DIR/$CRATE_NAME_FS_SAFE-%p-%m.profraw"
 
 cargo clean
@@ -28,8 +28,6 @@ OBJECTS=$( \
     | xargs -I {} printf "%s %s " "-object" {} \
 )
 
-printf "\n\n%s\n\n" "$OBJECTS"
-
 llvm-profdata-20 merge \
     -sparse "$PROFRAW_DIR"/* \
     -o "$PROFDATA_FILE"
@@ -37,14 +35,18 @@ llvm-profdata-20 merge \
 llvm-cov-20 show \
     --format=html \
     --output-dir="$HTML_REPORT_DIR" \
-    --show-line-counts-or-regions \
-    --show-instantiations=true \
-    --show-regions=true \
     -Xdemangler=rustfilt \
+    --show-instantiations=true \
+    --show-mcdc=true \
+    --show-regions=true \
+    --show-line-counts=false \
+    --show-line-counts-or-regions=false \
     --instr-profile="$PROFDATA_FILE" \
     --ignore-filename-regex='/.cargo' \
     --ignore-filename-regex='/.rustup/' \
     --ignore-filename-regex='/rustc/' \
+    --ignore-filename-regex='/tests/' \
+    --ignore-filename-regex='_test$' \
     $OBJECTS
 
 cp -r "$HTML_REPORT_DIR"/* /app/output
