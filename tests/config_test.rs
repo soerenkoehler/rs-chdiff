@@ -115,3 +115,21 @@ fn invalid_list_rel() {
             "Reading config file: expected value at line 4 column 1",
         ));
 }
+
+#[test]
+fn invalid_listentry_abs() {
+    run_with_config("tests/config_data/invalid_listentry_abs.json", &["v"])
+        .success()
+        .stderr(contains(
+            "Reading config file: Pattern syntax error near position 2: recursive wildcards must form a single path component at line 2 column 39",
+        ));
+}
+
+#[test]
+fn invalid_listentry_rel() {
+    run_with_config("tests/config_data/invalid_listentry_rel.json", &["v"])
+        .success()
+        .stderr(contains(
+            "Reading config file: Pattern syntax error near position 2: recursive wildcards must form a single path component at line 3 column 39",
+        ));
+}

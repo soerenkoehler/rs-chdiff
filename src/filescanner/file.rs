@@ -32,8 +32,8 @@ impl FileList {
             entries: rx
                 .iter()
                 .filter_map(|path: PathBuf| {
-                    let path_rel = path.strip_prefix(&root_path).unwrap();
-                    if !exclude_absolute.matches(&path) && !exclude_relative.matches(path_rel) {
+                    let path_rel = path.strip_prefix(&root_path).unwrap().to_path_buf();
+                    if !exclude_absolute.matches(&path) && !exclude_relative.matches(&path_rel) {
                         Some(path_rel.to_path_buf())
                     } else {
                         None
