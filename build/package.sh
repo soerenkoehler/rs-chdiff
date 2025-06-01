@@ -3,7 +3,7 @@
 DISTDIR=./dist
 NAME_REPLACEMENT='s/rs-chdiff/chdiff/'
 
-BINARIES=$(find target \
+BINARIES=$(find ./target \
     -type f \
     -path "*/release/*" \
     \( -name "rs-chdiff" -or -name "rs-chdiff.exe" \) )
@@ -30,4 +30,7 @@ for BIN in $BINARIES; do
 
     printf "\n"
 done
+
+zip -v9j "$DISTDIR/chdiff-$(date -I)-coverage.zip" "./coverage"
+
 # TODO add coverage artifact

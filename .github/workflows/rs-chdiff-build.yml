@@ -30,10 +30,10 @@ jobs:
       # - name: "compile"
       #   run: ./build/compile.sh
 
-      # - name: "package"
-      #   run: ./build/package.sh
+      - name: "package"
+        run: ./build/package.sh
 
-      # - name: "create release"
-      #   run: ./build/release.sh
-      #   env:
-      #     GH_TOKEN: ${{ github.token }}
+      - name: "create release"
+        run: ./build/release.sh
+        env:
+          GH_TOKEN: ${{ github.token }}
