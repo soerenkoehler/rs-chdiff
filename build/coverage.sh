@@ -10,5 +10,5 @@ mkdir -p coverage
 docker run \
   -p 8888:80 \
   --mount type=bind,src=.,dst=/app/input,ro \
-  --mount type=bind,src=./coverage,dst=/app/work/coverage \
+  --mount type=bind,src=./coverage,dst=/app/coverage \
   --rm -it rs-chdiff:latest bash show-coverage.sh
