@@ -11,8 +11,4 @@ docker build \
        --build-arg GROUP_ID=$(id -g) \
        ./build/docker-rs
 
-docker images -a
-
 docker images -aqf "dangling=true" | xargs -I {} docker rmi {}
-
-docker images -a
