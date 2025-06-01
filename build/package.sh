@@ -1,5 +1,9 @@
 #!/bin/bash
 
+ls -al .
+ls -al ./coverage
+ls -al ./target
+
 DISTDIR=./dist
 NAME_REPLACEMENT='s/rs-chdiff/chdiff/'
 
@@ -33,4 +37,4 @@ done
 
 zip -v9j "$DISTDIR/chdiff-$(date -I)-coverage.zip" "./coverage"
 
-# TODO add coverage artifact
+ls -al ./dist
