@@ -7,8 +7,6 @@ fi
 
 mkdir -p coverage
 
-./build-docker-rs.sh
-
 docker run \
   --mount type=bind,src=.,dst=/app/input,ro \
   --mount type=bind,src=./coverage,dst=/app/output \

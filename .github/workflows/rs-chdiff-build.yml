@@ -21,8 +21,11 @@ jobs:
       # - name: "generate test data"
       #   run: ./build/generate-testdata.sh
 
-      - name: "test"
+      - name: "build docker image with rust toolchain"
         run: ./build/test.sh
+
+      - name: "test"
+        run: ./build/test
 
       # - name: "compile"
       #   run: ./build/compile.sh
