@@ -22,10 +22,10 @@ jobs:
       #   run: ./build/generate-testdata.sh
 
       - name: "build docker image with rust toolchain"
-        run: ./build/test.sh
+        run: ./build/build-docker-rs.sh
 
       - name: "test"
-        run: ./build/test
+        run: ./build/test.sh
 
       # - name: "compile"
       #   run: ./build/compile.sh
