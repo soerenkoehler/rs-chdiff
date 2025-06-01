@@ -7,14 +7,8 @@ fi
 
 mkdir -p coverage
 
-if [[ -n $1 ]]; then
-    CMD="coverage-$1.sh"
-else
-    CMD=""
-fi
-
 docker run \
   -p 8888:80 \
   --mount type=bind,src=.,dst=/app/input,ro \
-  --mount type=bind,src=./coverage,dst=/app/output \
-  --rm -it rs-chdiff:latest bash $CMD
+  --mount type=bind,src=./coverage,dst=/app/work/coverage \
+  --rm -it rs-chdiff:latest bash show-coverage.sh

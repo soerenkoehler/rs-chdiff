@@ -1,6 +1,13 @@
 #!/bin/bash
 
-cargo build \
-    --release \
-    --target x86_64-pc-windows-gnu \
-    --target x86_64-unknown-linux-gnu
+if [[ ! -e Cargo.toml ]]; then
+    printf "not in project root\n"
+    exit -1
+fi
+
+mkdir -p target
+
+docker run \
+  --mount type=bind,src=.,dst=/app/input,ro \
+  --mount type=bind,src=./target,dst=/app/work/target \
+  --rm rs-chdiff:latest bash test.sh

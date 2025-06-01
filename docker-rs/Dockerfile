@@ -7,8 +7,10 @@ ARG GROUP_ID
 # prevent interactive prompts during package installation
 ARG DEBIAN_FRONTEND=noninteractive
 
-# set up the working directory
+# set up the working directories
 ENV APP_HOME="/app"
+ENV WORK_DIR="$APP_HOME/work"
+WORKDIR $WORK_DIR
 WORKDIR $APP_HOME
 
 # install essential tools

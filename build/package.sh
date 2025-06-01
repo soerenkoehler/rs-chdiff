@@ -1,9 +1,5 @@
 #!/bin/bash
 
-ls -al .
-ls -al ./coverage
-ls -al ./target
-
 DISTDIR=./dist
 NAME_REPLACEMENT='s/rs-chdiff/chdiff/'
 
@@ -35,6 +31,6 @@ for BIN in $BINARIES; do
     printf "\n"
 done
 
-zip -v9j "$DISTDIR/chdiff-$(date -I)-coverage.zip" "./coverage"
+zip -rv9j "$DISTDIR/chdiff-$(date -I)-coverage.zip" "./coverage/*"
 
 ls -al ./dist

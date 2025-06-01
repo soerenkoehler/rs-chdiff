@@ -5,13 +5,15 @@ if [[ ! -e Cargo.toml ]]; then
     exit -1
 fi
 
+DOCKERDIR=./docker-rs
 RETRY=3
 while [[ $RETRY > 0 && -z $(docker images -a | grep rs-chdiff) ]]; do
-    docker build \
+    tar -c rust-toolchain.toml -C $DOCKERDIR $(find $DOCKERDIR -type f -printf "%P ") \
+    | docker build \
         -t rs-chdiff \
         --build-arg USER_ID=$(id -u) \
         --build-arg GROUP_ID=$(id -g) \
-        ./build/docker-rs
+        -
     RETRY=$(($RETRY-1))
 done
 

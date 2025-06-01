@@ -1,9 +1,6 @@
 #!/bin/bash
 
-LLVM_VERSION="-20"
-export RUSTFLAGS="-C instrument-coverage"
-
-mkdir -p /app/work
+SCRIPTNAME=$(readlink -f $0)
 
 rm -rf /app/work/* /app/output/*
 
@@ -16,7 +13,5 @@ find /app/input -mindepth 1 -maxdepth 1 \
     -not -name "rust-toolchain.toml" \
     -not -name "target" \
 | xargs -I {SRC} cp -r {SRC} .
-
-./build/generate-testdata.sh
 
 popd
