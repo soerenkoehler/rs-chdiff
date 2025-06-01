@@ -1,5 +1,7 @@
 #!/bin/bash
 
+SCRIPTNAME=$(readlink -f $0)
+
 ./coverage-init.sh
 
 pushd /app/work
@@ -20,9 +22,15 @@ rm -rf "$COVERAGE_DIR"
 mkdir -p "$PROFRAW_DIR"
 mkdir -p "$HTML_REPORT_DIR"
 
+TEST_OUTPUT=$(cargo t --jobs 1 --message-format=json)
+
+if [[ $? != 0 ]]; then
+    printf "%s: tests have failed\n" $SCRIPTNAME
+    exit -1
+fi
+
 OBJECTS=$( \
-    cargo t --jobs 1 --message-format=json \
-    | jq -r -R "fromjson? | select(.profile.test == true) | .filenames[]" \
+    jq -r -R "fromjson? | select(.profile.test == true) | .filenames[]" <<< $TEST_OUTPUT \
     | xargs -I {} printf "%s %s " "-object" {}; \
     find target/debug -type f \( -name "$CRATE_NAME*" -or -name "$CRATE_NAME_FS_SAFE*" \) -not -name "*.d" \
     | xargs -I {} printf "%s %s " "-object" {} \

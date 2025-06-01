@@ -18,8 +18,8 @@ jobs:
       - name: "update rust toolchain"
         run: rustup target list --installed
 
-      - name: "generate test data"
-        run: ./build/generate-testdata.sh
+      # - name: "generate test data"
+      #   run: ./build/generate-testdata.sh
 
       - name: "test"
         run: ./build/test.sh

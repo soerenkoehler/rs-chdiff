@@ -1,11 +1,13 @@
 #!/bin/bash
 
+SCRIPTNAME=$(readlink -f $0)
+
 rm -rf /var/www/html/*
 
 ./coverage-create.sh
 
 if [[ $? != 0 ]]; then
-    printf "could not create coverage\n"
+    printf "%s: could not create coverage\n" $SCRIPTNAME
     exit -1
 fi
 

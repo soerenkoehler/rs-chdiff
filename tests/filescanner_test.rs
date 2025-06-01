@@ -1,4 +1,3 @@
-// TODO integration test expecting stderr on unreachable directory
 mod common;
 
 use predicates::{ord::eq, str::starts_with};
