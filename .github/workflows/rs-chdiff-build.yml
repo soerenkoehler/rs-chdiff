@@ -12,11 +12,11 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3.5.3
 
-      - name: "install mingw-w64"
-        run: sudo apt install mingw-w64
+      # - name: "install mingw-w64"
+      #   run: sudo apt install mingw-w64
 
-      - name: "update rust toolchain"
-        run: rustup target list --installed
+      # - name: "update rust toolchain"
+      #   run: rustup target list --installed
 
       # - name: "generate test data"
       #   run: ./build/generate-testdata.sh
@@ -24,13 +24,13 @@ jobs:
       - name: "test"
         run: ./build/test.sh
 
-      - name: "compile"
-        run: ./build/compile.sh
+      # - name: "compile"
+      #   run: ./build/compile.sh
 
-      - name: "package"
-        run: ./build/package.sh
+      # - name: "package"
+      #   run: ./build/package.sh
 
-      - name: "create release"
-        run: ./build/release.sh
-        env:
-          GH_TOKEN: ${{ github.token }}
+      # - name: "create release"
+      #   run: ./build/release.sh
+      #   env:
+      #     GH_TOKEN: ${{ github.token }}
