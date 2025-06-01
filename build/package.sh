@@ -31,6 +31,4 @@ for BIN in $BINARIES; do
     printf "\n"
 done
 
-zip -rv9 "$DISTDIR/chdiff-$(date -I)-coverage.zip" ./coverage/*
-
-ls -al ./dist
+zip -r9 "$DISTDIR/chdiff-$(date -I)-coverage.zip" ./coverage/*
