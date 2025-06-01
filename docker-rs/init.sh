@@ -2,7 +2,7 @@
 
 SCRIPTNAME=$(readlink -f $0)
 
-rm -rf /app/work/* /app/output/*
+rm -rf /app/work/*
 
 pushd /app/work
 

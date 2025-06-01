@@ -11,4 +11,7 @@ cargo build \
     --target x86_64-pc-windows-gnu \
     --target x86_64-unknown-linux-gnu
 
+ls -al
+ls -al target
+
 popd
