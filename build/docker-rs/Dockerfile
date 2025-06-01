@@ -48,6 +48,7 @@ RUN groupadd --gid $GROUP_ID \
             --uid $USER_ID \
             --gid $GROUP_ID \
             --non-unique \
+            --create-home \
             --home-dir $USER_HOME \
             $USER_NAME
 RUN less /etc/passwd && ls -al /home
