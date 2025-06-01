@@ -55,6 +55,7 @@ RUN groupadd --gid $GROUP_ID \
 RUN touch /var/run/nginx.pid && \
     chown -R $USER_NAME:$USER_NAME \
           $APP_HOME \
+          $USER_HOME \
           /var/www \
           /var/lib/nginx \
           /var/log/nginx \
