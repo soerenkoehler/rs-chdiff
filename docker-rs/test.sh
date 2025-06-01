@@ -59,4 +59,6 @@ llvm-cov-20 show \
     --ignore-filename-regex='_test.rs$' \
     $OBJECTS
 
+cp -r -v "$HTML_REPORT_DIR/*" /app/coverage
+
 popd

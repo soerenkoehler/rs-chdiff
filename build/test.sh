@@ -9,5 +9,5 @@ mkdir -p coverage
 
 docker run \
   --mount type=bind,src=.,dst=/app/input,ro \
-  --mount type=bind,src=./coverage,dst=/app/work/coverage \
+  --mount type=bind,src=./coverage,dst=/app/coverage \
   --rm rs-chdiff:latest bash test.sh

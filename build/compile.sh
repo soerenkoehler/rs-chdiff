@@ -9,5 +9,5 @@ mkdir -p target
 
 docker run \
   --mount type=bind,src=.,dst=/app/input,ro \
-  --mount type=bind,src=./target,dst=/app/work/target \
+  --mount type=bind,src=./target,dst=/app/target \
   --rm rs-chdiff:latest bash test.sh
