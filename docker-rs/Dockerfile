@@ -24,6 +24,7 @@ RUN apt-get update && \
         less \
         libssl-dev \
         lsb-release \
+        mingw-w64 \
         nginx \
         software-properties-common \
         vim
