@@ -51,7 +51,6 @@ RUN groupadd --gid $GROUP_ID \
             --create-home \
             --home-dir $USER_HOME \
             $USER_NAME
-RUN less /etc/passwd && ls -al /home
 
 # prepare nginx to run non-root
 RUN touch /var/run/nginx.pid && \

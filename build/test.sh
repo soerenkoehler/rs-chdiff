@@ -7,7 +7,11 @@ fi
 
 mkdir -p coverage
 
+docker images -a
+
 docker run \
   --mount type=bind,src=.,dst=/app/input,ro \
   --mount type=bind,src=./coverage,dst=/app/output \
   --rm rs-chdiff:latest bash coverage-create
+
+printf "Done!\n"
