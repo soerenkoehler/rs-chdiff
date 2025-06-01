@@ -15,4 +15,4 @@ docker images -a
 
 docker images -aqf "dangling=true" | xargs -I {} docker rmi {}
 
-qdocker images -a
+docker images -a
