@@ -18,6 +18,7 @@ fi
 while [[ $RETRY > 0 && -z $(docker images -a | grep $IMAGENAME) ]]; do
     tar -c rust-toolchain.toml -C $DOCKERDIR $(find $DOCKERDIR -type f -printf "%P ") \
     | docker build \
+        --progress plain \
         -t $IMAGENAME \
         --build-arg USER_ID=$(id -u) \
         --build-arg GROUP_ID=$(id -g) \
