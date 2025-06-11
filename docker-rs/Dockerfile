@@ -16,9 +16,12 @@ WORKDIR $APP_HOME
 # install essential tools
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+        apt-file \
+        sudo \
         build-essential \
         curl \
         ca-certificates \
+        gcc-arm-linux-gnueabi \
         gnupg \
         jq \
         less \

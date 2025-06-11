@@ -16,13 +16,12 @@ fi
 
 # build image; 3 retries for build in pipeline
 while [[ $RETRY > 0 && -z $(docker images -a | grep $IMAGENAME) ]]; do
-    tar -c rust-toolchain.toml -C $DOCKERDIR $(find $DOCKERDIR -type f -printf "%P ") \
-    | docker build \
+    docker build \
         --progress plain \
         -t $IMAGENAME \
         --build-arg USER_ID=$(id -u) \
         --build-arg GROUP_ID=$(id -g) \
-        -
+        $DOCKERDIR
     RETRY=$(($RETRY-1))
 done
 

@@ -9,7 +9,8 @@ pushd /app/work
 cargo build \
     --release \
     --target x86_64-pc-windows-gnu \
-    --target x86_64-unknown-linux-gnu
+    --target x86_64-unknown-linux-gnu \
+    --target armv7-unknown-linux-gnueabi
 
 cp -r target/* /app/target
 
