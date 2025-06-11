@@ -1,7 +1,10 @@
 name: rs-chdiff-build
 
 on:
-  push
+  push:
+    branches:
+      - main
+      - dev
 
 jobs:
   build-and-release:
