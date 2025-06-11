@@ -11,20 +11,35 @@ BINARIES=$(find ./target \
 mkdir -p $DISTDIR
 
 for BIN in $BINARIES; do
-    ARCH=$(basename $(dirname $(dirname $BIN)))
-    SRC=$(dirname $BIN)/$(sed $NAME_REPLACEMENT <<< $(basename $BIN))
-    DST="$DISTDIR/chdiff-$(date -I)-$ARCH"
+    ARTIFACT=$(dirname $BIN)/$(sed $NAME_REPLACEMENT <<< $(basename $BIN))
 
-    mv -v $BIN $SRC
+    mv -v $BIN $ARTIFACT
+
+    case $(basename $(dirname $(dirname $BIN))) in
+    armv7*)
+        ARCH=armV7
+        ;;
+    aarch64*)
+        ARCH=arm64
+        ;;
+    x86_64-pc-windows-gnu)
+        ARCH=win64
+        ;;
+    x86_64-unknown-linux-gnu)
+        ARCH=linux
+        ;;
+    esac
+
+    DISTNAME="$DISTDIR/chdiff-$(date -I)-$ARCH"
 
     case $ARCH in
     *windows*)
-        zip -v9j "$DST.zip" "$SRC"
+        zip -v9j "$DISTNAME.zip" "$ARTIFACT"
         ;;
     *)
-        tar -cf "$DST.tar" \
-            -C $(dirname "$SRC") $(basename $SRC)
-        gzip -v9 "$DST.tar"
+        tar -cf "$DISTNAME.tar" \
+            -C $(dirname "$ARTIFACT") $(basename $ARTIFACT)
+        gzip -v9 "$DISTNAME.tar"
         ;;
     esac
 

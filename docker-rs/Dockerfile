@@ -22,9 +22,12 @@ RUN apt-get update && \
         curl \
         ca-certificates \
         gcc-arm-linux-gnueabi \
+        gcc-aarch64-linux-gnu \
         gnupg \
         jq \
         less \
+        libc6-dev-armel-cross \
+        libc6-dev-arm64-cross \
         libssl-dev \
         lsb-release \
         mingw-w64 \
