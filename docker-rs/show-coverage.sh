@@ -11,6 +11,6 @@ if [[ $? != 0 ]]; then
     exit -1
 fi
 
-cp -r /app/coverage/* /var/www/html
+cp -r /app/coverage/html/* /var/www/html
 
 nginx -g "daemon off; master_process off;"
