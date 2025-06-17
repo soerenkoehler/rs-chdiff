@@ -47,15 +47,15 @@ llvm-profdata merge \
 
 llvm-cov export \
     --format=lcov \
-    -Xdemangler=rustfilt \
     --instr-profile="$PROFDATA_FILE" \
-    --ignore-filename-regex='/.cargo' \
-    --ignore-filename-regex='/.rustup/' \
-    --ignore-filename-regex='/rustc/' \
-    --ignore-filename-regex='/tests/' \
-    --ignore-filename-regex='_test.rs$' \
     $OBJECTS \
     >"$REPORT_FILE"
+    # -Xdemangler=rustfilt \
+    # --ignore-filename-regex='/.cargo' \
+    # --ignore-filename-regex='/.rustup/' \
+    # --ignore-filename-regex='/rustc/' \
+    # --ignore-filename-regex='/tests/' \
+    # --ignore-filename-regex='_test.rs$' \
 
 llvm-cov show \
     --format=html \
