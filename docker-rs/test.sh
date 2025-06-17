@@ -12,6 +12,7 @@ COVERAGE_DIR=$(readlink -f "coverage")
 PROFRAW_DIR="$COVERAGE_DIR/profraw"
 PROFDATA_FILE="$COVERAGE_DIR/coverage.profdata"
 REPORT_FILE="$COVERAGE_DIR/coverage.lcov"
+CLIPPY_FILE="$COVERAGE_DIR/clippy.json"
 HTML_OUTPUT_DIR="$COVERAGE_DIR/html"
 OUTPUT_DIR=/app/coverage
 
@@ -22,15 +23,17 @@ export RUSTFLAGS="-C instrument-coverage"
 export LLVM_PROFILE_FILE="$PROFRAW_DIR/$CRATE_NAME-%p-%m.profraw"
 
 cargo clean
-rm -rf "$OUTPUT_DIR"
+rm -rf "$OUTPUT_DIR"/*
 rm -rf "$COVERAGE_DIR"
 mkdir -p "$PROFRAW_DIR"
 mkdir -p "$HTML_OUTPUT_DIR"
 
+cargo clippy --message-format=json >"$CLIPPY_FILE"
+
 TEST_OUTPUT=$(cargo t --jobs 1 --message-format=json)
 
 if [[ $? != 0 ]]; then
-    printf "%s: tests have failed\n" $SCRIPTNAME
+    printf "%s: tests have failed\n" "$SCRIPTNAME"
     exit -1
 fi
 
@@ -55,7 +58,7 @@ llvm-cov export \
     --ignore-filename-regex='/tests/' \
     --ignore-filename-regex='_test.rs$' \
     $OBJECTS \
-    >$REPORT_FILE
+    >"$REPORT_FILE"
 
 llvm-cov show \
     --format=html \
@@ -74,7 +77,8 @@ llvm-cov show \
     --ignore-filename-regex='_test.rs$' \
     $OBJECTS
 
-cp -r $HTML_OUTPUT_DIR $OUTPUT_DIR
-cp $REPORT_FILE $OUTPUT_DIR
+cp -r "$HTML_OUTPUT_DIR" "$OUTPUT_DIR"
+cp "$REPORT_FILE" "$OUTPUT_DIR"
+cp "$CLIPPY_FILE" "$OUTPUT_DIR"
 
 popd
