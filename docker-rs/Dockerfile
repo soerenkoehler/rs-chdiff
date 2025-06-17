@@ -7,17 +7,29 @@ ARG GROUP_ID
 # prevent interactive prompts during package installation
 ARG DEBIAN_FRONTEND=noninteractive
 
-# set up the working directories
+# set up environment and working directories
+ENV USER_NAME=docker-rs
+ENV USER_HOME="/home/$USER_NAME"
+
 ENV APP_HOME="/app"
 ENV WORK_DIR="$APP_HOME/work"
+ENV CARGO_HOME="$APP_HOME/.cargo"
+
+ENV LLVM_VERSION=20
+ENV LD_LIBRARY_PATH="/usr/lib/llvm-$LLVM_VERSION/lib"
+ENV PATHEXT="$CARGO_HOME/bin:/usr/lib/llvm-$LLVM_VERSION/bin"
+ENV PATH="$PATHEXT:$PATH"
+
+# set PATH for interactive shell
+RUN printf "export PATH=%s:$PATH" "$PATHEXT" >> /etc/bash.bashrc
+
+# set up working directories
 WORKDIR $WORK_DIR
 WORKDIR $APP_HOME
 
 # install essential tools
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        apt-file \
-        sudo \
         build-essential \
         curl \
         ca-certificates \
@@ -35,10 +47,8 @@ RUN apt-get update && \
         software-properties-common \
         vim
 
-# install LLVM 20
-RUN curl -L https://apt.llvm.org/llvm.sh | bash -s 20
-ENV PATH="$PATH:/usr/lib/llvm-20/bin"
-ENV LD_LIBRARY_PATH="/usr/lib/llvm-20/lib"
+# install LLVM
+RUN curl -L https://apt.llvm.org/llvm.sh | bash -s $LLVM_VERSION
 
 # clean up unnecessary files and directories to reduce image size
 RUN apt-get clean && \
@@ -48,8 +58,6 @@ RUN apt-get clean && \
         /tmp/*
 
 # set up non-root user
-ENV USER_NAME=docker-rs
-ENV USER_HOME="/home/$USER_NAME"
 RUN groupadd --gid $GROUP_ID \
              --non-unique \
              $USER_NAME && \
@@ -78,9 +86,7 @@ RUN mv $CONF $CONF.old && \
 USER $USER_NAME
 
 # install Rust using rustup
-ENV CARGO_HOME="$APP_HOME/.cargo"
-RUN curl -sSf https://sh.rustup.rs | bash -s -- -y >/app/rust.log
-ENV PATH="$CARGO_HOME/bin:$PATH"
+RUN curl -sSf https://sh.rustup.rs | bash -s -- -y
 
 # Setup Rust
 COPY rust-toolchain.toml rust-toolchain.toml

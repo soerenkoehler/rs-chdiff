@@ -11,23 +11,29 @@ pushd /app/work
 COVERAGE_DIR=$(readlink -f "coverage")
 PROFRAW_DIR="$COVERAGE_DIR/profraw"
 PROFDATA_FILE="$COVERAGE_DIR/coverage.profdata"
-HTML_REPORT_DIR="$COVERAGE_DIR/html"
+REPORT_FILE="$COVERAGE_DIR/coverage.lcov"
+CLIPPY_FILE="$COVERAGE_DIR/clippy.json"
+HTML_OUTPUT_DIR="$COVERAGE_DIR/html"
+OUTPUT_DIR=/app/coverage
 
 CRATE_NAME="rs-chdiff"
 CRATE_NAME_FS_SAFE=$(echo "$CRATE_NAME" | tr '-' '_')
 
 export RUSTFLAGS="-C instrument-coverage"
-export LLVM_PROFILE_FILE="$PROFRAW_DIR/$CRATE_NAME_FS_SAFE-%p-%m.profraw"
+export LLVM_PROFILE_FILE="$PROFRAW_DIR/$CRATE_NAME-%p-%m.profraw"
 
 cargo clean
+rm -rf "$OUTPUT_DIR"/*
 rm -rf "$COVERAGE_DIR"
 mkdir -p "$PROFRAW_DIR"
-mkdir -p "$HTML_REPORT_DIR"
+mkdir -p "$HTML_OUTPUT_DIR"
+
+cargo clippy --message-format=json >"$CLIPPY_FILE"
 
 TEST_OUTPUT=$(cargo t --jobs 1 --message-format=json)
 
 if [[ $? != 0 ]]; then
-    printf "%s: tests have failed\n" $SCRIPTNAME
+    printf "%s: tests have failed\n" "$SCRIPTNAME"
     exit -1
 fi
 
@@ -38,13 +44,25 @@ OBJECTS=$( \
     | xargs -I {} printf "%s %s " "-object" {} \
 )
 
-llvm-profdata-20 merge \
+llvm-profdata merge \
     -sparse "$PROFRAW_DIR"/* \
     -o "$PROFDATA_FILE"
 
-llvm-cov-20 show \
+llvm-cov export \
+    --format=lcov \
+    -Xdemangler=rustfilt \
+    --instr-profile="$PROFDATA_FILE" \
+    --ignore-filename-regex='/.cargo' \
+    --ignore-filename-regex='/.rustup/' \
+    --ignore-filename-regex='/rustc/' \
+    --ignore-filename-regex='/tests/' \
+    --ignore-filename-regex='_test.rs$' \
+    $OBJECTS \
+    >"$REPORT_FILE"
+
+llvm-cov show \
     --format=html \
-    --output-dir="$HTML_REPORT_DIR" \
+    --output-dir="$HTML_OUTPUT_DIR" \
     -Xdemangler=rustfilt \
     --show-instantiations=true \
     --show-mcdc=true \
@@ -59,6 +77,8 @@ llvm-cov-20 show \
     --ignore-filename-regex='_test.rs$' \
     $OBJECTS
 
-cp -r $HTML_REPORT_DIR/* /app/coverage
+cp -r "$HTML_OUTPUT_DIR" "$OUTPUT_DIR"
+cp "$REPORT_FILE" "$OUTPUT_DIR"
+cp "$CLIPPY_FILE" "$OUTPUT_DIR"
 
 popd

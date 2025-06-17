@@ -13,13 +13,20 @@ jobs:
 
     steps:
       - name: checkout
-        uses: actions/checkout@v3.5.3
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
       - name: "build docker image with rust toolchain"
         run: ./build/docker-rs-build.sh
 
       - name: "test"
         run: ./build/test.sh
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: "compile"
         run: ./build/compile.sh
