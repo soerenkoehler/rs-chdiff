@@ -1,0 +1,4 @@
+{
+    "exclude.absolute": ["**/*.txt"],
+    "exclude.relative": []
+}

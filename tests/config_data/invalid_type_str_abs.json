@@ -1,0 +1,4 @@
+{
+    "exclude.absolute": "string",
+    "exclude.relative": []
+}

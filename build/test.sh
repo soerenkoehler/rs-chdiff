@@ -5,9 +5,9 @@ if [[ ! -e Cargo.toml ]]; then
     exit -1
 fi
 
-mkdir -p target
+mkdir -p coverage
 
 docker run \
   --mount type=bind,src=.,dst=/app/input,ro \
-  --mount type=bind,src=./target,dst=/app/target \
-  --rm rs-chdiff:latest bash compile.sh
+  --mount type=bind,src=./coverage,dst=/app/coverage \
+  --rm rs-chdiff:latest bash test.sh

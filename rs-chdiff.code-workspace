@@ -4,5 +4,15 @@
             "path": "."
         }
     ],
-    "settings": {}
+    "settings": {
+        "files.exclude": {
+            "coverage": true,
+            "generated": true,
+            "target": true
+        },
+        "files.associations": {
+            "**/tests/config_data/invalid_list_abs.json": "plaintext",
+            "**/tests/config_data/invalid_list_rel.json": "plaintext"
+        }
+    }
 }

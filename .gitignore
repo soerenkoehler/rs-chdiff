@@ -1,2 +1,6 @@
+/dist
+/coverage
+/generated
 /target
 *.zip
+*.tar.gz
