@@ -12,7 +12,6 @@ COVERAGE_DIR=$(readlink -f "coverage")
 PROFRAW_DIR="$COVERAGE_DIR/profraw"
 PROFDATA_FILE="$COVERAGE_DIR/coverage.profdata"
 REPORT_FILE="$COVERAGE_DIR/coverage.lcov"
-CLIPPY_FILE="$COVERAGE_DIR/clippy.json"
 HTML_OUTPUT_DIR="$COVERAGE_DIR/html"
 OUTPUT_DIR=/app/coverage
 
@@ -27,8 +26,6 @@ rm -rf "$OUTPUT_DIR"/*
 rm -rf "$COVERAGE_DIR"
 mkdir -p "$PROFRAW_DIR"
 mkdir -p "$HTML_OUTPUT_DIR"
-
-cargo clippy --message-format=json >"$CLIPPY_FILE"
 
 TEST_OUTPUT=$(cargo t --jobs 1 --message-format=json)
 
@@ -79,6 +76,5 @@ llvm-cov show \
 
 cp -r "$HTML_OUTPUT_DIR" "$OUTPUT_DIR"
 cp "$REPORT_FILE" "$OUTPUT_DIR"
-cp "$CLIPPY_FILE" "$OUTPUT_DIR"
 
 popd
