@@ -46,9 +46,9 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: docker-rs
-          build-args:
-            USER_ID: ${{ env.USER_ID }}
-            GROUP_ID: ${{ env.GROUP_ID }}
+          build-args: |
+            USER_ID=${{ env.USER_ID }}
+            GROUP_ID=${{ env.GROUP_ID }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
