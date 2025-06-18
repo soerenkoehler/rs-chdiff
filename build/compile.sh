@@ -6,6 +6,7 @@ if [[ ! -e Cargo.toml ]]; then
 fi
 
 mkdir -p target
+chmod 777 target
 
 docker run \
   --mount type=bind,src=.,dst=/app/input,ro \
