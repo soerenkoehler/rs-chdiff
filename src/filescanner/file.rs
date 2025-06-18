@@ -19,10 +19,7 @@ impl FileList {
         exclude_relative: &PatternList,
     ) -> Result<Self> {
         // Create file list in terms of absolute paths.
-        let root_path = match canonicalize(root_path) {
-            Ok(result) => result,
-            Err(err) => return Err(err),
-        };
+        let root_path = canonicalize(root_path)?;
 
         let (tx, rx) = channel();
 
@@ -48,10 +45,10 @@ impl FileList {
         if path.is_dir() {
             match read_dir(path) {
                 Ok(dir_entries) => dir_entries
-                    .filter_map(Self::result_to_option)
+                    .filter_map(Result::ok)
                     .map(|entry| {
                         let tx_clone: Sender<PathBuf> = tx.clone();
-                        thread::spawn(move || Self::process_path(tx_clone, &entry.path()))
+                        thread::spawn(move || Self::process_path(tx_clone, entry.path()))
                     })
                     .collect::<Vec<_>>()
                     .into_iter()
@@ -64,13 +61,6 @@ impl FileList {
             let _ = tx.send(path.to_path_buf());
         } else {
             eprintln!("neither file nor directory: {}", path.display())
-        }
-    }
-
-    pub(super) fn result_to_option<T>(entry: Result<T>) -> Option<T> {
-        match entry {
-            Ok(entry) => Some(entry),
-            _ => None,
         }
     }
 }

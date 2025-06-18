@@ -8,7 +8,10 @@ use std::{
 
 use crate::filescanner::PatternList;
 
-use super::{def::{CONFIG_FILE, ENV_HOME}, Config};
+use super::{
+    Config,
+    def::{CONFIG_FILE, ENV_HOME},
+};
 
 impl Config {
     /// Create empty Config instance.
@@ -28,15 +31,20 @@ impl Config {
     pub fn from_file(file: &PathBuf) -> Self {
         let mut config = match OpenOptions::new().read(true).open(file) {
             Ok(file) => match serde_json::from_reader(BufReader::new(file)) {
-                Ok(cfg) => Ok(cfg),
-                Err(err) => Err(eprintln!("Reading config file: {err}")),
+                Ok(cfg) => cfg,
+                Err(err) => {
+                    eprintln!("Reading config file: {err}");
+                    Self::new()
+                }
             },
             Err(err) => match err.kind() {
-                ErrorKind::NotFound => Ok(Self::create_default_config_file(file)),
-                _ => Err(eprintln!("Reading config file: {err}")),
+                ErrorKind::NotFound => Self::create_default_config_file(file),
+                _ => {
+                    eprintln!("Reading config file: {err}");
+                    Self::new()
+                }
             },
-        }
-        .unwrap_or(Self::new());
+        };
 
         // add built-in excludes
         //

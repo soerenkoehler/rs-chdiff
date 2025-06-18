@@ -22,8 +22,7 @@ impl PatternList {
     pub fn matches(&self, path: &PathBuf) -> bool {
         self.patterns
             .iter()
-            .find(|pattern| pattern.matches_path(path.as_ref()))
-            .is_some()
+            .any(|pattern| pattern.matches_path(path.as_ref()))
     }
 
     pub fn push(&mut self, pattern: Pattern) -> &mut PatternList {
@@ -46,7 +45,7 @@ impl Serialize for PatternList {
 impl<'de> Deserialize<'de> for PatternList {
     fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         match deserializer.deserialize_seq(PatternVisitor {}) {
-            Ok(patterns) => Ok(PatternList { patterns: patterns }),
+            Ok(patterns) => Ok(PatternList { patterns }),
             Err(err) => Err(de::Error::custom(err.to_string())),
         }
     }
