@@ -7,10 +7,11 @@ on:
       - main
     paths:
       - 'docker-rs/**'
+      - '.github/workflows/docker-rs.yml'
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: docker-rs
+  IMAGE_NAME: soerenkoehler/docker-rs
 
 jobs:
   build-and-push-image:
@@ -41,6 +42,7 @@ jobs:
       - name: Set environment variables
         run: |
           printf "USER_ID=%s\nGROUP_ID=%s\n" "$(id -u)" "$(id -g)"
+
       - name: Build and push Docker image
         id: push
         uses: docker/build-push-action@v6
