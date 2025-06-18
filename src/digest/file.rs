@@ -22,7 +22,6 @@ impl Digest {
                 Err(err) => panic!("can't open digest file: {}", err),
             })
             .lines()
-            .into_iter()
             .filter_map(|line| match line {
                 Ok(line) => Self::entry_from_line(line),
                 Err(err) => panic!("can't read digest file: {}", err),
