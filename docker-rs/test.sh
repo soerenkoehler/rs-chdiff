@@ -60,22 +60,6 @@ llvm-cov export \
     $OBJECTS \
     >"$REPORT_TEMP_FILE"
 
-# 12:55:51.276 DEBUG Parsing LCOV report: /home/runner/work/rs-chdiff/rs-chdiff/coverage/coverage.lcov
-# 12:55:51.278 WARN  Found 12 problems in LCOV report: /home/runner/work/rs-chdiff/rs-chdiff/coverage/coverage.lcov. More details in verbose mode
-# 12:55:51.278 DEBUG /home/runner/work/rs-chdiff/rs-chdiff/coverage/coverage.lcov:1: Invalid SF. File not found: /app/work/src/cli/def.rs
-# 12:55:51.278 DEBUG /home/runner/work/rs-chdiff/rs-chdiff/coverage/coverage.lcov:54: Invalid SF. File not found: /app/work/src/cli/parse.rs
-# 12:55:51.278 DEBUG /home/runner/work/rs-chdiff/rs-chdiff/coverage/coverage.lcov:84: Invalid SF. File not found: /app/work/src/commands/backup.rs
-# 12:55:51.279 DEBUG /home/runner/work/rs-chdiff/rs-chdiff/coverage/coverage.lcov:99: Invalid SF. File not found: /app/work/src/commands/create.rs
-# 12:55:51.279 DEBUG /home/runner/work/rs-chdiff/rs-chdiff/coverage/coverage.lcov:114: Invalid SF. File not found: /app/work/src/commands/mod.rs
-# 12:55:51.279 DEBUG /home/runner/work/rs-chdiff/rs-chdiff/coverage/coverage.lcov:299: Invalid SF. File not found: /app/work/src/commands/verify.rs
-# 12:55:51.279 DEBUG /home/runner/work/rs-chdiff/rs-chdiff/coverage/coverage.lcov:329: Invalid SF. File not found: /app/work/src/config/loader.rs
-# 12:55:51.279 DEBUG /home/runner/work/rs-chdiff/rs-chdiff/coverage/coverage.lcov:396: Invalid SF. File not found: /app/work/src/digest/def.rs
-# 12:55:51.279 DEBUG /home/runner/work/rs-chdiff/rs-chdiff/coverage/coverage.lcov:409: Invalid SF. File not found: /app/work/src/digest/file.rs
-# 12:55:51.279 DEBUG /home/runner/work/rs-chdiff/rs-chdiff/coverage/coverage.lcov:459: Invalid SF. File not found: /app/work/src/filescanner/file.rs
-# 12:55:51.279 DEBUG /home/runner/work/rs-chdiff/rs-chdiff/coverage/coverage.lcov:545: Invalid SF. File not found: /app/work/src/filescanner/pattern.rs
-# 12:55:51.279 DEBUG /home/runner/work/rs-chdiff/rs-chdiff/coverage/coverage.lcov:639: Invalid SF. File not found: /app/work/src/main.rs
-# 12:55:51.279 DEBUG Processed LCOV coverage reports
-
 llvm-cov show \
     --format=html \
     --output-dir="$HTML_TEMP_DIR" \
@@ -97,6 +81,5 @@ llvm-cov show \
 cp -r "$HTML_TEMP_DIR" "$OUTPUT_DIR"
 # copy LCOV report and translate source file pathes
 cat "$REPORT_TEMP_FILE" | sed 's/^SF:\/app\/work/SF:./' >"$REPORT_FILE"
-# cp "$REPORT_FILE" "$OUTPUT_DIR"
 
 popd
