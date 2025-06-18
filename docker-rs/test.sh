@@ -6,8 +6,6 @@ SCRIPTNAME=$(readlink -f $0)
 
 ls -al /app
 
-pushd /app/work
-
 ./build/generate-testdata.sh
 
 COVERAGE_DIR=$(readlink -f "coverage")
