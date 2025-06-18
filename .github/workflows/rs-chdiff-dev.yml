@@ -1,0 +1,36 @@
+name: rs-chdiff build dev
+
+on:
+  push:
+    branches:
+      - dev
+    paths-ignore:
+      - 'docker-rs/**'
+
+jobs:
+  build-and-release:
+    name: build and release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: "build docker image with rust toolchain"
+        run: ./build/docker-rs-build.sh
+
+      - name: "test"
+        run: ./build/test.sh
+
+      - name: "compile"
+        run: ./build/compile.sh
+
+      - name: "package"
+        run: ./build/package.sh
+
+      - name: "create release"
+        run: ./build/release.sh
+        env:
+          GH_TOKEN: ${{ github.token }}
