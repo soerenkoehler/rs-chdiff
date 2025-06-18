@@ -26,7 +26,8 @@ jobs:
 
       - name: "docker pull"
         run: |
-          docker pull ghcr.io/soerenkoehler/docker-rs:latest
+          docker pull ghcr.io/soerenkoehler/docker-rs:${{ github.ref_name }}
+          docker tag soerenkoehler/docker-rs:${{ github.ref_name }} soerenkoehler/docker-rs:latest
 
       - name: "test"
         run: ./build/test.sh
