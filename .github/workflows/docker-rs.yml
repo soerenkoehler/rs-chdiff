@@ -39,18 +39,11 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      - name: Set environment variables
-        run: |
-          printf "USER_ID=%s\nGROUP_ID=%s\n" "$(id -u)" "$(id -g)"
-
       - name: Build and push Docker image
         id: push
         uses: docker/build-push-action@v6
         with:
           context: docker-rs
-          build-args: |
-            USER_ID=${{ env.USER_ID }}
-            GROUP_ID=${{ env.GROUP_ID }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
