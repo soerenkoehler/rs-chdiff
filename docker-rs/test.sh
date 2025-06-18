@@ -4,7 +4,7 @@ SCRIPTNAME=$(readlink -f $0)
 
 ./init.sh
 
-ls -al /app
+pushd /app/work
 
 ./build/generate-testdata.sh
 
