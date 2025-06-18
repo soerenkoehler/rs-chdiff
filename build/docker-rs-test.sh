@@ -13,4 +13,4 @@ docker run \
   --mount type=bind,src=./coverage,dst=/app/coverage \
   --mount type=bind,src=./target,dst=/app/target \
   --user root \
-  --rm -it rs-chdiff:latest bash
+  --rm -it docker-rs:latest bash

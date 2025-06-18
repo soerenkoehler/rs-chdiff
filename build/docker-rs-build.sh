@@ -5,7 +5,7 @@ if [[ ! -e Cargo.toml ]]; then
     exit -1
 fi
 
-IMAGENAME=rs-chdiff
+IMAGENAME=docker-rs
 DOCKERDIR=./docker-rs
 RETRY=3
 
