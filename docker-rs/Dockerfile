@@ -20,18 +20,21 @@ ENV LD_LIBRARY_PATH="/usr/lib/llvm-$LLVM_VERSION/lib"
 ENV PATHEXT="$CARGO_HOME/bin:/usr/lib/llvm-$LLVM_VERSION/bin"
 ENV PATH="$PATHEXT:$PATH"
 
+ENV NGINX_CONF=/etc/nginx/nginx.conf
+
 # set PATH for interactive shell
-RUN printf "export PATH=%s:$PATH" "$PATHEXT" >> /etc/bash.bashrc
 
 # set up working directories
-WORKDIR $WORK_DIR
-WORKDIR $APP_HOME
+WORKDIR "$WORK_DIR"
+WORKDIR "$APP_HOME"
 
-# * install essential tools
-# * install LLVM
-# * clean up apt cache
-# * setup non-root user
-RUN apt-get update \
+# - install essential tools
+# - install LLVM
+# - clean up apt cache
+# - setup non-root user
+# - prepare nginx to run non-root
+RUN printf "export PATH=%s:$PATH" "$PATHEXT" >> /etc/bash.bashrc \
+    && apt-get update \
     && apt-get install -y --no-install-recommends \
         build-essential \
         ca-certificates \
@@ -54,7 +57,7 @@ RUN apt-get update \
     && rm -rf \
         /var/lib/apt/lists/* \
         /var/tmp/* \
-        /tmp/*
+        /tmp/* \
     && groupadd --gid "$GROUP_ID" \
              --non-unique \
              "$USER_NAME" \
@@ -64,11 +67,8 @@ RUN apt-get update \
             --non-unique \
             --create-home \
             --home-dir $USER_HOME \
-            "$USER_NAME"
-
-# prepare nginx to run non-root
-ENV CONF=/etc/nginx/nginx.conf
-RUN touch /var/run/nginx.pid \
+            "$USER_NAME" \
+    && touch /var/run/nginx.pid \
     && chown -R "$USER_NAME":"$USER_NAME" \
           $APP_HOME \
           $USER_HOME \
@@ -76,8 +76,8 @@ RUN touch /var/run/nginx.pid \
           /var/lib/nginx \
           /var/log/nginx \
           /var/run/nginx.pid \
-    && mv "$CONF" "$CONF".old \
-    && sed -e 's/^user\s/# user /g' "$CONF".old >"$CONF"
+    && mv "$NGINX_CONF" "$NGINX_CONF".old \
+    && sed -e 's/^user\s/# user /g' "$NGINX_CONF".old >"$NGINX_CONF"
 
 # switch to non-root user
 USER $USER_NAME
