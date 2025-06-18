@@ -14,13 +14,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: checkout
+      - name: "checkout"
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: "build docker image with rust toolchain"
-        run: ./build/docker-rs-build.sh
+      - name: "docker pull"
+        run: |
+          printf "%s\n" "${{ secrets.GITHUB_TOKEN }}" \
+          | docker login -u ${{ github.actor }} --password-stdin
+          docker pull ghcr.io/soerenkoehler/docker-rs:latest
 
       - name: "test"
         run: ./build/test.sh
