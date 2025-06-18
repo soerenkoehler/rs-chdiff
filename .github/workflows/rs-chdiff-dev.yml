@@ -6,6 +6,7 @@ on:
       - dev
     paths-ignore:
       - 'docker-rs/**'
+      - '.github/workflows/docker-rs.yml'
 
 jobs:
   build-and-release:
