@@ -5,6 +5,6 @@ if [[ ! -e Cargo.toml ]]; then
     exit -1
 fi
 
-# ./build/test.sh
+./build/test.sh
 
 nginx -c $(readlink -e ./build/nginx.conf) -p $(pwd)/coverage
