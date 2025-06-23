@@ -77,8 +77,9 @@ llvm-cov show \
     -Xdemangler=rustfilt \
     $OBJECTS
 
-# copy HTML report
+# copy HTML report and fix permissions
 cp -r "$HTML_TEMP_DIR" "$OUTPUT_DIR"
+chmod -R 755 "$OUTPUT_DIR"/*
 # copy LCOV report and translate source file pathes
 cat "$REPORT_TEMP_FILE" | sed 's/^SF:\/app\/work/SF:./' >"$REPORT_FILE"
 
