@@ -2,7 +2,7 @@ use glob::Pattern;
 use std::{
     env,
     fs::OpenOptions,
-    io::{BufReader, BufWriter, ErrorKind},
+    io::{BufReader, BufWriter, Error, ErrorKind},
     path::{Path, PathBuf},
 };
 
@@ -22,27 +22,20 @@ impl Config {
         }
     }
 
-    /// Load the given config file.
-    ///
-    /// Errors are printed to stderr and then the default config is returned.
+    /// Load the given config file. If missing, a default config file is
+    /// created.
     ///
     /// In every case the built-in relative exclude ".chdiff.txt" is added.
     ///
-    pub fn from_file(file: &PathBuf) -> Self {
+    pub fn from_file(file: &PathBuf) -> Result<Self, Error> {
         let mut config = match OpenOptions::new().read(true).open(file) {
             Ok(file) => match serde_json::from_reader(BufReader::new(file)) {
                 Ok(cfg) => cfg,
-                Err(err) => {
-                    eprintln!("Reading config file: {err}");
-                    Self::new()
-                }
+                Err(err) => return Err(Error::other(err)),
             },
             Err(err) => match err.kind() {
-                ErrorKind::NotFound => Self::create_default_config_file(file),
-                _ => {
-                    eprintln!("Reading config file: {err}");
-                    Self::new()
-                }
+                ErrorKind::NotFound => Self::create_default_config_file(file)?,
+                _ => return Err(err),
             },
         };
 
@@ -56,7 +49,7 @@ impl Config {
             .exclude_relative
             .push(Pattern::new(".chdiff.txt").unwrap());
 
-        config
+        Ok(config)
     }
 
     /// Return the path to the users config file.
@@ -66,7 +59,7 @@ impl Config {
         Path::new(&env::var(ENV_HOME).unwrap()).join(CONFIG_FILE)
     }
 
-    fn create_default_config_file(filepath: &PathBuf) -> Self {
+    fn create_default_config_file(filepath: &PathBuf) -> Result<Self, Error> {
         let default = Self::new();
         match OpenOptions::new()
             .create_new(true)
@@ -74,11 +67,13 @@ impl Config {
             .open(filepath)
         {
             Ok(file) => match serde_json::to_writer(BufWriter::new(file), &default) {
-                Ok(_) => println!("created default config file: {}", filepath.display()),
-                Err(err) => eprintln!("{err}"),
+                Ok(_) => {
+                    println!("created default config file: {}", filepath.display());
+                    Ok(default)
+                }
+                Err(err) => Err(Error::other(err)),
             },
-            Err(err) => eprintln!("{err}"),
+            Err(err) => Err(err),
         }
-        default
     }
 }
