@@ -64,8 +64,8 @@ filelist_test_badsymlink() {
 
 digest_test() {
     create_file empty.dat 0
-    create_file small.dat 1K
-    create_file large.dat 1G
+    printf "content of first file" >file1.dat
+    printf "content of second file" >file2.dat
 
     cd ..
     truncate -s 0 sha256.txt
