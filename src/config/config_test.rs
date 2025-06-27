@@ -1,8 +1,17 @@
 use glob::Pattern;
-use std::{path::PathBuf, str::FromStr};
+use std::{io::ErrorKind, path::PathBuf, str::FromStr};
 
 use super::Config;
 use crate::filescanner::PatternList;
+
+#[test]
+fn file_exists_but_unreadable() {
+    let file =
+        PathBuf::from_str("generated/config_test_unreadable_file/data/unreadable.json").unwrap();
+    let err = Config::from_file(&file).unwrap_err();
+    assert_ne!(err.kind(), ErrorKind::NotFound);
+    assert!(err.to_string().contains("Permission denied"));
+}
 
 #[test]
 fn valid_config() {
