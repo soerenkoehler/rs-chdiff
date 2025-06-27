@@ -18,13 +18,16 @@ struct Dependencies {
 }
 
 pub fn main() {
-    cli::parse(
-        &Dependencies {
-            backup: Box::new(Backup {}),
-            create: Box::new(Create {}),
-            verify: Box::new(Verify {}),
-            config: Config::from_file(&Config::get_config_path()),
-        },
-        args_os(),
-    );
+    match Config::from_file(&Config::get_config_path()) {
+        Ok(cfg) => cli::parse(
+            &Dependencies {
+                backup: Box::new(Backup {}),
+                create: Box::new(Create {}),
+                verify: Box::new(Verify {}),
+                config: cfg,
+            },
+            args_os(),
+        ),
+        Err(err) => eprintln!("Reading config file: {}", err),
+    }
 }

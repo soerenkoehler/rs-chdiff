@@ -1,7 +1,7 @@
 use std::{
     fs::{canonicalize, read_dir},
     io::Result,
-    path::{Path, PathBuf},
+    path::PathBuf,
     sync::mpsc::{Sender, channel},
     thread::{self},
 };
@@ -40,15 +40,14 @@ impl FileList {
         })
     }
 
-    fn process_path<P: AsRef<Path>>(tx: Sender<PathBuf>, path: P) {
-        let path = path.as_ref();
+    fn process_path(tx: Sender<PathBuf>, path: &PathBuf) {
         if path.is_dir() {
             match read_dir(path) {
                 Ok(dir_entries) => dir_entries
                     .filter_map(Result::ok)
                     .map(|entry| {
                         let tx_clone: Sender<PathBuf> = tx.clone();
-                        thread::spawn(move || Self::process_path(tx_clone, entry.path()))
+                        thread::spawn(move || Self::process_path(tx_clone, &entry.path()))
                     })
                     .collect::<Vec<_>>()
                     .into_iter()
@@ -57,7 +56,6 @@ impl FileList {
                 _ => eprintln!("error accessing {}", path.display()),
             }
         } else if path.is_file() {
-            // TODO replace unwrap() with error handling
             let _ = tx.send(path.to_path_buf());
         } else {
             eprintln!("neither file nor directory: {}", path.display())

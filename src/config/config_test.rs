@@ -17,7 +17,7 @@ fn valid_config() {
     let mut expect_relative = PatternList::new();
     expect_relative.push(Pattern::new(".chdiff.txt").unwrap());
 
-    let cfg = Config::from_file(&file);
+    let cfg = Config::from_file(&file).unwrap();
     assert_eq!(cfg.exclude_absolute, expect_absolute);
     assert_eq!(cfg.exclude_relative, expect_relative);
 }
@@ -36,7 +36,7 @@ fn valid_with_list_abs_config() {
     let mut expect_relative = PatternList::new();
     expect_relative.push(Pattern::new(".chdiff.txt").unwrap());
 
-    let cfg = Config::from_file(&file);
+    let cfg = Config::from_file(&file).unwrap();
     assert_eq!(cfg.exclude_absolute, expect_absolute);
     assert_eq!(cfg.exclude_relative, expect_relative);
 }
@@ -55,7 +55,7 @@ fn valid_with_list_rel_config() {
     expect_relative.push(Pattern::new("**/*.txt").unwrap());
     expect_relative.push(Pattern::new(".chdiff.txt").unwrap());
 
-    let cfg = Config::from_file(&file);
+    let cfg = Config::from_file(&file).unwrap();
     assert_eq!(cfg.exclude_absolute, expect_absolute);
     assert_eq!(cfg.exclude_relative, expect_relative);
 }

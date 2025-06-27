@@ -1,7 +1,7 @@
 use std::{
     collections::HashMap,
     fs::OpenOptions,
-    io::{BufRead, BufReader},
+    io::{BufRead, BufReader, Error},
     path::PathBuf,
     str::FromStr,
 };
@@ -15,27 +15,32 @@ impl Digest {
         }
     }
 
-    pub fn from_file(file: &PathBuf) -> Self {
-        Digest {
-            entries: BufReader::new(match OpenOptions::new().read(true).open(file) {
-                Ok(file) => file,
-                Err(err) => panic!("can't open digest file: {}", err),
-            })
+    pub fn from_file(file: &PathBuf) -> Result<Self, Error> {
+        let mut digest = Self::new();
+        let mut last_error = None;
+
+        BufReader::new(OpenOptions::new().read(true).open(file)?)
             .lines()
-            .filter_map(|line| match line {
-                Ok(line) => Self::entry_from_line(line),
-                Err(err) => panic!("can't read digest file: {}", err),
-            })
-            .collect(),
+            .for_each(|line| match Self::entry_from_line(line.unwrap()) {
+                Ok((path, hash)) => {
+                    digest.entries.insert(path, hash);
+                }
+                Err(err) => last_error = Some(err),
+            });
+
+        match last_error {
+            Some(err) => Err(err),
+            _ => Ok(digest),
         }
     }
 
-    fn entry_from_line(line: String) -> Option<(PathBuf, String)> {
-        let Some(captures) = REGEX_DIGEST_LINE.captures(&line) else {
-            eprintln!("invalid digest line: {}", line);
-            return None;
-        };
-        let (_, [hash, _, path]) = captures.extract();
-        Some((PathBuf::from_str(path).unwrap(), hash.to_string()))
+    fn entry_from_line(line: String) -> Result<(PathBuf, String), Error> {
+        match REGEX_DIGEST_LINE.captures(&line) {
+            Some(captured) => {
+                let (_, [hash, _, path]) = captured.extract();
+                Ok((PathBuf::from_str(path).unwrap(), hash.to_string()))
+            }
+            _ => Err(Error::other(format!("invalid digest line: {}", line))),
+        }
     }
 }
