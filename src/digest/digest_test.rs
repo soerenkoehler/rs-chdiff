@@ -1,4 +1,4 @@
-use std::{collections::HashMap, io::{Error, ErrorKind}, path::PathBuf, str::FromStr};
+use std::{collections::HashMap, io::ErrorKind, path::PathBuf, str::FromStr};
 
 use super::Digest;
 
@@ -45,14 +45,14 @@ fn load_sha512() {
 #[test]
 fn invalid_file_format() {
     let digest = Digest::from_file(&get_path("tests/digest_data/invalid.txt")).unwrap_err();
-    assert_eq!(digest.kind(),ErrorKind::Other);
-    assert_eq!(digest.to_string(),"invalid digest line: x data/file.dat");
+    assert_eq!(digest.kind(), ErrorKind::Other);
+    assert_eq!(digest.to_string(), "invalid digest line: x data/file.dat");
 }
 
 #[test]
 fn file_not_readable() {
     let digest = Digest::from_file(&get_path("tests/digest_data/non-existing.txt")).unwrap_err();
-    assert_eq!(digest.kind(),ErrorKind::NotFound);
+    assert_eq!(digest.kind(), ErrorKind::NotFound);
     assert!(digest.to_string().contains("No such file or directory"));
 }
 
