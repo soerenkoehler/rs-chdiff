@@ -14,6 +14,15 @@ fn file_exists_but_unreadable() {
 }
 
 #[test]
+fn file_unwritable() {
+    let file =
+        PathBuf::from_str("generated/config_test_unwritable_file/data/unwritable.json").unwrap();
+    let err = Config::from_file(&file).unwrap_err();
+    assert_ne!(err.kind(), ErrorKind::NotFound);
+    assert!(err.to_string().contains("Permission denied"));
+}
+
+#[test]
 fn valid_config() {
     let file = PathBuf::from_str("tests/config_data/valid.json").unwrap();
 

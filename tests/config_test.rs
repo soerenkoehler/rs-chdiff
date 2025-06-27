@@ -1,7 +1,10 @@
 mod common;
 
 use predicates::str::contains;
-use std::path::Path;
+use std::{
+    fs::{self, Permissions},
+    path::{Path, PathBuf},
+};
 
 use common::{run_in_dir, run_with_config};
 
@@ -16,6 +19,27 @@ fn missing_config_file() {
 }
 
 #[test]
+fn cant_create_default_config_file() {
+    fn set_readonly(path: &PathBuf, readonly: bool) {
+        let mut permissions: Permissions = fs::metadata(&path).unwrap().permissions();
+        permissions.set_readonly(readonly);
+        fs::set_permissions(&path, permissions).unwrap();
+    }
+
+    let cwd = tempfile::tempdir().unwrap().into_path();
+
+    // provoke error by making cwd readonly
+    set_readonly(&cwd, true);
+
+    run_in_dir(&cwd, &["v"])
+        .success()
+        .stderr(contains("Reading config file: Permission denied"));
+
+    // reset readonly flag on cwd
+    set_readonly(&cwd, false);
+}
+
+#[test]
 fn empty_file() {
     run_with_config("tests/config_data/empty_file.json", &["v"])
         .success()
@@ -26,21 +50,27 @@ fn empty_file() {
 fn unexpected_attribute() {
     run_with_config("tests/config_data/unexpected_attribute.json", &["v"])
         .success()
-        .stderr(contains("Reading config file: unknown field `other.attribute`"));
+        .stderr(contains(
+            "Reading config file: unknown field `other.attribute`",
+        ));
 }
 
 #[test]
 fn missing_exclude_abs() {
     run_with_config("tests/config_data/missing_exclude_abs.json", &["v"])
         .success()
-        .stderr(contains("Reading config file: missing field `exclude.absolute`"));
+        .stderr(contains(
+            "Reading config file: missing field `exclude.absolute`",
+        ));
 }
 
 #[test]
 fn missing_exclude_rel() {
     run_with_config("tests/config_data/missing_exclude_rel.json", &["v"])
         .success()
-        .stderr(contains("Reading config file: missing field `exclude.relative`"));
+        .stderr(contains(
+            "Reading config file: missing field `exclude.relative`",
+        ));
 }
 
 #[test]
