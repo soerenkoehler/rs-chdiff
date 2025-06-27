@@ -1,7 +1,7 @@
 use std::{
     fs::{canonicalize, read_dir},
     io::Result,
-    path::{Path, PathBuf},
+    path::PathBuf,
     sync::mpsc::{Sender, channel},
     thread::{self},
 };
