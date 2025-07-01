@@ -43,6 +43,11 @@ OBJECTS=$( \
     | xargs -I {} printf "%s %s " "-object" {} \
 )
 
+EXCEPTIONS=$(
+    cat .llvm-cov-ignore
+    | xargs -I {} printf "--ignore-filename-regex='%s' " {}
+)
+
 llvm-profdata merge \
     -sparse "$PROFRAW_DIR"/* \
     -o "$PROFDATA_FILE"
@@ -51,12 +56,8 @@ llvm-cov export \
     --format=lcov \
     -path-equivalence=/app/work,. \
     --instr-profile="$PROFDATA_FILE" \
-    --ignore-filename-regex='/.cargo' \
-    --ignore-filename-regex='/.rustup/' \
-    --ignore-filename-regex='/rustc/' \
-    --ignore-filename-regex='/tests/' \
-    --ignore-filename-regex='_test.rs$' \
     -Xdemangler=rustfilt \
+    $EXCEPTIONS \
     $OBJECTS \
     >"$REPORT_TEMP_FILE"
 
