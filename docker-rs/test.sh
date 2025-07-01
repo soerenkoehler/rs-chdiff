@@ -44,7 +44,7 @@ OBJECTS=$( \
 )
 
 EXCEPTIONS=$(
-    cat .llvm-cov-ignore
+    cat .llvm-cov-ignore \
     | xargs -I {} printf "--ignore-filename-regex='%s' " {}
 )
 
