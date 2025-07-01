@@ -62,6 +62,15 @@ filelist_test_badsymlink() {
     ln -s file1 symlink-to-file1
 }
 
+config_test_unreadable_file() {
+    touch unreadable.json
+    chmod 000 unreadable.json
+}
+
+config_test_unwritable_file() {
+    chmod 555 .
+}
+
 digest_test() {
     create_file empty.dat 0
     printf "content of first file" >file1.dat
@@ -87,4 +96,6 @@ rm -rf generated/*
 create filelist_test
 create filelist_test_baddir
 create filelist_test_badsymlink
+create config_test_unreadable_file
+create config_test_unwritable_file
 create digest_test

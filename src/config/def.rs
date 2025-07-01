@@ -9,6 +9,7 @@ pub const ENV_HOME: &str = "HOME";
 pub const ENV_HOME: &str = "USERPROFILE";
 
 pub const CONFIG_FILE: &str = ".chdiff-config.json";
+pub const DIGEST_FILE: &str = ".chdiff.txt";
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(deny_unknown_fields)]

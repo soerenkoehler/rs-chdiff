@@ -2,8 +2,7 @@ use std::{
     collections::HashMap,
     fs::OpenOptions,
     io::{BufRead, BufReader, Error},
-    path::PathBuf,
-    str::FromStr,
+    path::{Path, PathBuf},
 };
 
 use super::def::{Digest, REGEX_DIGEST_LINE};
@@ -38,7 +37,7 @@ impl Digest {
         match REGEX_DIGEST_LINE.captures(&line) {
             Some(captured) => {
                 let (_, [hash, _, path]) = captured.extract();
-                Ok((PathBuf::from_str(path).unwrap(), hash.to_string()))
+                Ok((Path::new(path).to_path_buf(), hash.to_string()))
             }
             _ => Err(Error::other(format!("invalid digest line: {}", line))),
         }

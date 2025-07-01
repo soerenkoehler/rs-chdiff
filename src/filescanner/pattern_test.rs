@@ -40,3 +40,11 @@ fn deserialize_badentry() {
         }
     }
 }
+
+pub fn to_patternlist(patterns: &[&str]) -> PatternList {
+    let mut result = PatternList::new();
+    for pattern in patterns {
+        result.push(Pattern::new(pattern).unwrap());
+    }
+    result
+}

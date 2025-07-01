@@ -1,4 +1,5 @@
 use glob::Pattern;
+use serde_json::to_writer;
 use std::{
     env,
     fs::OpenOptions,
@@ -6,7 +7,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use crate::filescanner::PatternList;
+use crate::{config::def::DIGEST_FILE, filescanner::PatternList};
 
 use super::{
     Config,
@@ -40,14 +41,9 @@ impl Config {
         };
 
         // add built-in excludes
-        //
-        // TODO replace unwrap() with error handling
-        //
-        // TODO replace string literal with constant, possibly even list of
-        // patterns
         config
             .exclude_relative
-            .push(Pattern::new(".chdiff.txt").unwrap());
+            .push(Pattern::new(DIGEST_FILE).unwrap());
 
         Ok(config)
     }
@@ -56,7 +52,9 @@ impl Config {
     //
     // TODO replace unwrap() with error handling
     pub fn get_config_path() -> PathBuf {
-        Path::new(&env::var(ENV_HOME).unwrap()).join(CONFIG_FILE)
+        Path::new(&env::var(ENV_HOME).unwrap())
+            .to_path_buf()
+            .join(CONFIG_FILE)
     }
 
     fn create_default_config_file(filepath: &PathBuf) -> Result<Self, Error> {
@@ -66,13 +64,11 @@ impl Config {
             .write(true)
             .open(filepath)
         {
-            Ok(file) => match serde_json::to_writer(BufWriter::new(file), &default) {
-                Ok(_) => {
-                    println!("created default config file: {}", filepath.display());
-                    Ok(default)
-                }
-                Err(err) => Err(Error::other(err)),
-            },
+            Ok(file) => {
+                to_writer(BufWriter::new(file), &default).unwrap();
+                println!("created default config file: {}", filepath.display());
+                Ok(default)
+            }
             Err(err) => Err(err),
         }
     }
