@@ -26,6 +26,6 @@ Lorem ipsum
 [badge-dev]:    https://github.com/soerenkoehler/rs-chdiff/actions/workflows/rs-chdiff-dev.yml/badge.svg
 [github-dev]:   https://github.com/soerenkoehler/rs-chdiff/actions/workflows/rs-chdiff-dev.yml
 
-[sonar]:        https://sonarcloud.io/summary/overall?id=soerenkoehler_rs-chdiffv
+[sonar]:        https://sonarcloud.io/summary/overall?id=soerenkoehler_rs-chdiff
 [badge-status]: https://sonarcloud.io/api/project_badges/measure?project=soerenkoehler_rs-chdiff&metric=alert_status
 [badge-cover]:  https://sonarcloud.io/api/project_badges/measure?project=soerenkoehler_rs-chdiff&metric=coverage
