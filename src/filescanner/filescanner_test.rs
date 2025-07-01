@@ -1,4 +1,3 @@
-use glob::Pattern;
 use std::{
     fs::OpenOptions,
     io::{BufRead, BufReader, ErrorKind},
@@ -6,7 +5,7 @@ use std::{
     str::FromStr,
 };
 
-use super::{FileList, PatternList};
+use crate::filescanner::{FileList, PatternList, pattern_test::to_patternlist};
 
 macro_rules! to_absolute_pattern {
     ($p:expr) => {
@@ -138,12 +137,4 @@ fn assert_filelist(expect_file: &str, exclude_absolute: &[&str], exclude_relativ
         (_, Some(Err(e))) => panic!("can't read expectation: {:?}", e),
         _ => false,
     } {}
-}
-
-fn to_patternlist(patterns: &[&str]) -> PatternList {
-    let mut result = PatternList::new();
-    for pattern in patterns {
-        result.push(Pattern::new(pattern).unwrap());
-    }
-    result
 }

@@ -6,10 +6,12 @@ use std::{
     str::FromStr,
 };
 
-use super::Config;
 use crate::{
-    config::def::{CONFIG_FILE, ENV_HOME},
-    filescanner::PatternList,
+    config::{
+        Config,
+        def::{CONFIG_FILE, ENV_HOME},
+    },
+    filescanner::pattern_test::to_patternlist,
 };
 
 #[test]
@@ -181,21 +183,13 @@ fn assert_valid_config(file: &str, absolute: &[&str], relative: &[&str]) {
     // create a valid file
     assert!(file.exists(), "test file missing");
 
-    let expect_absolute = make_patternlist(absolute);
-    let mut expect_relative = make_patternlist(relative);
+    let expect_absolute = to_patternlist(absolute);
+    let mut expect_relative = to_patternlist(relative);
     expect_relative.push(Pattern::new(".chdiff.txt").unwrap());
 
     let cfg = Config::from_file(&file).unwrap();
     assert_eq!(cfg.exclude_absolute, expect_absolute);
     assert_eq!(cfg.exclude_relative, expect_relative);
-}
-
-fn make_patternlist(patterns: &[&str]) -> PatternList {
-    let mut result = PatternList::new();
-    for pattern in patterns {
-        result.push(Pattern::new(pattern).unwrap());
-    }
-    result
 }
 
 fn assert_fs_error(file: &str, expected: &str) {

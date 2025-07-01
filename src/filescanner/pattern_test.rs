@@ -39,4 +39,11 @@ fn deserialize_badentry() {
             assert!(format!("{err}").contains("Pattern syntax error near position 2: recursive wildcards must form a single path component at line 1 column 15"))
         }
     }
+
+pub fn to_patternlist(patterns: &[&str]) -> PatternList {
+    let mut result = PatternList::new();
+    for pattern in patterns {
+        result.push(Pattern::new(pattern).unwrap());
+    }
+    result
 }

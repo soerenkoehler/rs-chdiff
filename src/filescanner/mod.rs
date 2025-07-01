@@ -8,4 +8,4 @@ pub use pattern::PatternList;
 mod filescanner_test;
 
 #[cfg(test)]
-mod pattern_test;
+pub mod pattern_test;

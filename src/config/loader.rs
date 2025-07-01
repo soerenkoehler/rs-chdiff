@@ -52,7 +52,9 @@ impl Config {
     //
     // TODO replace unwrap() with error handling
     pub fn get_config_path() -> PathBuf {
-        Path::new(&env::var(ENV_HOME).unwrap()).join(CONFIG_FILE)
+        Path::new(&env::var(ENV_HOME).unwrap())
+            .to_path_buf()
+            .join(CONFIG_FILE)
     }
 
     fn create_default_config_file(filepath: &PathBuf) -> Result<Self, Error> {
