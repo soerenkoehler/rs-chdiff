@@ -8,7 +8,7 @@ use std::{
 
 use common::{run_in_dir, run_with_config};
 
-//#[test]
+#[test]
 fn missing_config_file() {
     let cwd = tempfile::tempdir().unwrap().into_path();
     let expect = format!(
@@ -18,7 +18,7 @@ fn missing_config_file() {
     run_in_dir(&cwd, &["v"]).success().stdout(contains(expect));
 }
 
-//#[test]
+#[test]
 fn cant_create_default_config_file() {
     fn set_readonly(path: &PathBuf, readonly: bool) {
         let mut permissions: Permissions = fs::metadata(&path).unwrap().permissions();

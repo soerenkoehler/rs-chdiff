@@ -1,4 +1,4 @@
-use std::{path::PathBuf, str::FromStr};
+use std::path::Path;
 
 use super::CommandExecutor;
 use crate::{Dependencies, cli::ArgsVerify, digest::Digest, filescanner::FileList};
@@ -8,7 +8,7 @@ pub struct Verify {}
 impl CommandExecutor<ArgsVerify> for Verify {
     fn execute(&self, deps: &Dependencies, args: ArgsVerify) {
         println!("verify (wip) {:?}", args);
-        let _ = Digest::from_file(&args.path.join(PathBuf::from_str(".chdiff.txt").unwrap()));
+        let _ = Digest::from_file(&args.path.join(Path::new(".chdiff.txt").to_path_buf()));
         let mut files = match FileList::from_path(
             &args.path,
             &deps.config.exclude_absolute,
