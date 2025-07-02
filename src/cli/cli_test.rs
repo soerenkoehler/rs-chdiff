@@ -1,36 +1,36 @@
 use clap::Parser;
 use std::path::PathBuf;
 
-use super::{
-    ArgsBackup, ArgsCreate, ArgsVerify, def::Cli,
-    def::Command::{Backup, Create, Verify},
+use crate::{
+    Config, Dependencies,
+    cli::{
+        ArgsBackup, ArgsCreate, ArgsVerify,
+        def::{
+            Cli,
+            Command::{Backup, Create, Verify},
+        },
+    },
+    commands::MockCommandExecutor,
 };
 
-use crate::{Config, Dependencies, commands::MockCommandExecutor};
-
-#[test]
-fn default_path_backup() {
-    let Some(Backup(args)) = Cli::parse_from(["", "b"]).cmd else {
-        panic!("expected command: backup")
+macro_rules! command_args_test {
+    ($testname:ident, $type:ident, $expected_cmd:expr, $expected_arg:expr, $cmd:expr $(,$arg:expr)* ) => {
+        #[test]
+        fn $testname() {
+            let Some($type(args)) = Cli::parse_from(["", $cmd, $($arg,)*]).cmd else {
+                panic!("expected command: {}", $expected_cmd);
+            };
+            assert_eq!(args.path, PathBuf::from($expected_arg))
+        }
     };
-    assert_eq!(args.path, PathBuf::from("."))
 }
 
-#[test]
-fn default_path_create() {
-    let Some(Create(args)) = Cli::parse_from(["", "c"]).cmd else {
-        panic!("expected command: create")
-    };
-    assert_eq!(args.path, PathBuf::from("."))
-}
-
-#[test]
-fn default_path_verify() {
-    let Some(Verify(args)) = Cli::parse_from(["", "v"]).cmd else {
-        panic!("expected command: verify")
-    };
-    assert_eq!(args.path, PathBuf::from("."))
-}
+command_args_test!(default_path_backup, Backup, "backup", ".", "b");
+command_args_test!(arg_path_backup, Backup, "backup", "x", "b", "x");
+command_args_test!(default_path_create, Create, "create", ".", "c");
+command_args_test!(arg_path_create, Create, "create", "y", "c", "y");
+command_args_test!(default_path_verify, Verify, "verify", ".", "v");
+command_args_test!(arg_path_verify, Verify, "verify", "z", "v", "z");
 
 macro_rules! command_mapping_test {
     ($testname:ident, $cmd:expr, $a:ident, $b:ident, $c:ident) => {
