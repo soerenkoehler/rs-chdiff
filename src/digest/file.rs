@@ -1,11 +1,16 @@
+use regex::Regex;
 use std::{
     collections::HashMap,
     fs::OpenOptions,
     io::{BufRead, BufReader, Error},
     path::{Path, PathBuf},
+    sync::LazyLock,
 };
 
-use super::def::{Digest, REGEX_DIGEST_LINE};
+use crate::digest::def::Digest;
+
+pub static REGEX_DIGEST_LINE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^([0-9abcdefABCDEF]+)(\s\s|\s\*)(.+)$").unwrap());
 
 impl Digest {
     pub fn new() -> Self {
