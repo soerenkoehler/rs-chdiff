@@ -1,7 +1,8 @@
 use std::path::Path;
 
-use super::CommandExecutor;
-use crate::{Dependencies, cli::ArgsVerify, digest::Digest, filescanner::FileList};
+use crate::{
+    Dependencies, cli::ArgsVerify, commands::CommandExecutor, digest::Digest, filescanner::FileList,
+};
 
 pub struct Verify {}
 
