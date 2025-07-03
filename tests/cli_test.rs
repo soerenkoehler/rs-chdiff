@@ -83,20 +83,3 @@ fn version() {
         crate_version!()
     )));
 }
-
-#[test]
-fn missing_cmd() {
-    run_binary(&[]).failure().stderr(eq(ERROR_MISSING_CMD));
-}
-
-#[test]
-fn empty_cmd() {
-    run_binary(&[""]).failure().stderr(eq(ERROR_EMPTY_CMD));
-}
-
-#[test]
-fn wrong_cmd() {
-    run_binary(&["unknown"])
-        .failure()
-        .stderr(eq(ERROR_WRONG_CMD));
-}

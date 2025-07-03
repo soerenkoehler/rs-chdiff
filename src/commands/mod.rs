@@ -1,6 +1,7 @@
 pub mod backup;
 pub mod create;
 pub mod verify;
+pub mod version;
 
 use std::fmt::Debug;
 
