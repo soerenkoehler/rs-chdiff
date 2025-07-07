@@ -11,6 +11,6 @@ find /app/input -mindepth 1 -maxdepth 1 \
     -not -name "coverage" \
     -not -name "generated" \
     -not -name "target" \
-| xargs -I {SRC} cp -r {SRC} .
+| xargs -I {SRC} cp -rv {SRC} .
 
 popd

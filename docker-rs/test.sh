@@ -37,15 +37,16 @@ if [[ $? != 0 ]]; then
 fi
 
 OBJECTS=$( \
-    jq -r -R "fromjson? | select(.profile.test == true) | .filenames[]" <<< $TEST_OUTPUT \
-    | xargs -I {} printf "%s %s " "-object" {}; \
-    find target/debug -type f \( -name "$CRATE_NAME*" -or -name "$CRATE_NAME_FS_SAFE*" \) -not -name "*.d" \
-    | xargs -I {} printf "%s %s " "-object" {} \
+    ( \
+        jq -r -R "fromjson? | select(.profile.test == true) | .filenames[]" <<< $TEST_OUTPUT; \
+        find target/debug -type f \( -name "$CRATE_NAME*" -or -name "$CRATE_NAME_FS_SAFE*" \) -not -name "*.d" \
+    ) \
+    | xargs -I {} printf "%s=%s " "-object" "{}" \
 )
 
 EXCEPTIONS=$(
     cat .llvm-cov-ignore \
-    | xargs -I {} printf "--ignore-filename-regex='%s' " {}
+    | xargs -I {} printf "%s=%s " "-ignore-filename-regex" "{}"
 )
 
 llvm-profdata merge \
@@ -53,29 +54,24 @@ llvm-profdata merge \
     -o "$PROFDATA_FILE"
 
 llvm-cov export \
-    --format=lcov \
-    -path-equivalence=/app/work,. \
-    --instr-profile="$PROFDATA_FILE" \
+    -format=lcov \
+    -instr-profile="$PROFDATA_FILE" \
     -Xdemangler=rustfilt \
     $EXCEPTIONS \
     $OBJECTS \
     >"$REPORT_TEMP_FILE"
 
 llvm-cov show \
-    --format=html \
-    --output-dir="$HTML_TEMP_DIR" \
-    --show-instantiations=true \
-    --show-mcdc=true \
-    --show-regions=true \
-    --show-line-counts=false \
-    --show-line-counts-or-regions=false \
-    --instr-profile="$PROFDATA_FILE" \
-    --ignore-filename-regex='/.cargo' \
-    --ignore-filename-regex='/.rustup/' \
-    --ignore-filename-regex='/rustc/' \
-    --ignore-filename-regex='/tests/' \
-    --ignore-filename-regex='_test.rs$' \
+    -format=html \
+    -output-dir="$HTML_TEMP_DIR" \
+    -show-instantiations=true \
+    -show-mcdc=true \
+    -show-regions=true \
+    -show-line-counts=false \
+    -show-line-counts-or-regions=false \
+    -instr-profile="$PROFDATA_FILE" \
     -Xdemangler=rustfilt \
+    $EXCEPTIONS \
     $OBJECTS
 
 # copy HTML report and fix permissions

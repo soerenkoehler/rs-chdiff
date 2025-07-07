@@ -46,4 +46,7 @@ for BIN in $BINARIES; do
     printf "\n"
 done
 
-zip -r9 "$DISTDIR/chdiff-$(date -I)-coverage.zip" ./coverage/*
+zip -r9 "$DISTDIR/chdiff-$(date -I)-coverage.zip" \
+    ./coverage/* \
+    -x *.lcov \
+    -x coverage/nginx*
