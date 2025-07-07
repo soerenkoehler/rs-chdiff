@@ -34,11 +34,6 @@ jobs:
       - name: "test"
         run: ./build/test.sh
 
-      - name: debug
-        run: |
-          ls -al coverage
-          ls -al coverage/html
-
       - name: SonarQube Scan
         if: ${{ github.ref_name == 'main' }}
         uses: SonarSource/sonarqube-scan-action@v5
