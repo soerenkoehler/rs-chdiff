@@ -37,20 +37,17 @@ if [[ $? != 0 ]]; then
 fi
 
 OBJECTS=$( \
-    jq -r -R "fromjson? | select(.profile.test == true) | .filenames[]" <<< $TEST_OUTPUT \
-    | xargs -I {} printf "%s %s " "-object" {}; \
-    find target/debug -type f \( -name "$CRATE_NAME*" -or -name "$CRATE_NAME_FS_SAFE*" \) -not -name "*.d" \
+    ( \
+        jq -r -R "fromjson? | select(.profile.test == true) | .filenames[]" <<< $TEST_OUTPUT; \
+        find target/debug -type f \( -name "$CRATE_NAME*" -or -name "$CRATE_NAME_FS_SAFE*" \) -not -name "*.d" \
+    ) \
     | xargs -I {} printf "%s=%s " "-object" "{}" \
 )
 
 EXCEPTIONS=$(
     cat .llvm-cov-ignore \
-    | xargs -I {} printf "%s='%s' " "-ignore-filename-regex" "{}"
+    | xargs -I {} printf "%s=%s " "-ignore-filename-regex" "{}"
 )
-
-printf "DEBUG: EXCEPTIONS=%s\n" "$EXCEPTIONS"
-
-cat .llvm-cov-ignore
 
 llvm-profdata merge \
     -sparse "$PROFRAW_DIR"/* \
@@ -63,7 +60,6 @@ llvm-cov export \
     $EXCEPTIONS \
     $OBJECTS \
     >"$REPORT_TEMP_FILE"
-    # -path-equivalence=/app/work,. \
 
 llvm-cov show \
     -format=html \
