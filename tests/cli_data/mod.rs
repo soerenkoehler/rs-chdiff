@@ -2,7 +2,7 @@ pub const HELP_TEXT: &str =
 r#"Create, verify and compare hash sums on whole directory trees.
 
 
-Usage: rs-chdiff [COMMAND]
+Usage: chdiff [COMMAND]
 
 Commands:
   create  [aliases: c]
@@ -16,7 +16,7 @@ Options:
 "#;
 
 pub const HELP_TEXT_CREATE: &str =
-r#"Usage: rs-chdiff create [OPTIONS] [PATH]
+r#"Usage: chdiff create [OPTIONS] [PATH]
 
 Arguments:
   [PATH]  [default: .]
@@ -27,7 +27,7 @@ Options:
 "#;
 
 pub const HELP_TEXT_VERIFY: &str =
-r#"Usage: rs-chdiff verify [PATH]
+r#"Usage: chdiff verify [PATH]
 
 Arguments:
   [PATH]  [default: .]
@@ -37,7 +37,7 @@ Options:
 "#;
 
 pub const HELP_TEXT_BACKUP: &str =
-r#"Usage: rs-chdiff backup [PATH]
+r#"Usage: chdiff backup [PATH]
 
 Arguments:
   [PATH]  [default: .]

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DISTDIR=./dist
+DISTDIR=$(readlink -f ./dist)
 NAME_REPLACEMENT='s/rs-chdiff/chdiff/'
 
 BINARIES=$(find ./target \
@@ -33,20 +33,23 @@ for BIN in $BINARIES; do
     DISTNAME="$DISTDIR/chdiff-$(date -I)-$ARCH"
 
     case $ARCH in
-    *windows*)
-        zip -v9j "$DISTNAME.zip" "$ARTIFACT"
+    *win64*)
+        zip -v9jo "$DISTNAME.zip" "$ARTIFACT"
         ;;
     *)
         tar -cf "$DISTNAME.tar" \
-            -C $(dirname "$ARTIFACT") $(basename $ARTIFACT)
-        gzip -v9 "$DISTNAME.tar"
+            -C $(dirname "$ARTIFACT") \
+            $(basename $ARTIFACT)
+        gzip -v9f "$DISTNAME.tar"
         ;;
     esac
 
     printf "\n"
 done
 
-zip -r9 "$DISTDIR/chdiff-$(date -I)-coverage.zip" \
-    ./coverage/* \
+pushd ./coverage/html
+zip -v9r "$DISTDIR/chdiff-$(date -I)-coverage.zip" \
+    ./* \
     -x *.lcov \
-    -x coverage/nginx*
+    -x nginx*
+popd

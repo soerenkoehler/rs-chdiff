@@ -106,17 +106,17 @@ test_parse!(version, "version", "", "--version");
 test_parse_fail!(
     missing_command,
     ErrorKind::MissingSubcommand,
-    "error: command required\n\nUsage: rs-chdiff [COMMAND]\n\nFor more information, try '--help'.\n"
+    "error: command required\n\nUsage: chdiff [COMMAND]\n\nFor more information, try '--help'.\n"
 );
 test_parse_fail!(
     empty_command,
     ErrorKind::InvalidSubcommand,
-    "error: unrecognized subcommand ''\n\nUsage: rs-chdiff [COMMAND]\n\nFor more information, try '--help'.\n",
+    "error: unrecognized subcommand ''\n\nUsage: chdiff [COMMAND]\n\nFor more information, try '--help'.\n",
     ""
 );
 test_parse_fail!(
     invalid_command,
     ErrorKind::InvalidSubcommand,
-    "error: unrecognized subcommand 'xxx'\n\nUsage: rs-chdiff [COMMAND]\n\nFor more information, try '--help'.\n",
+    "error: unrecognized subcommand 'xxx'\n\nUsage: chdiff [COMMAND]\n\nFor more information, try '--help'.\n",
     "xxx"
 );
