@@ -10,15 +10,6 @@ BINARIES=$(find ./target \
 
 mkdir -p $DISTDIR
 
-debug_perm() {
-    OBJ=$(readlink -e "$1")
-    ls -ald "$OBJ"
-    PARENT=$(dirname "$OBJ")
-    if [[ "$OBJ" != "$PARENT" ]]; then
-        debug_perm "$PARENT"
-    fi
-}
-
 for BIN in $BINARIES; do
     ARTIFACT=$(dirname $BIN)/$(sed $NAME_REPLACEMENT <<< $(basename $BIN))
 
@@ -45,7 +36,7 @@ for BIN in $BINARIES; do
     DISTNAME="$DISTDIR/chdiff-$(date -I)-$ARCH"
 
     case $ARCH in
-    *windows*)
+    *win64*)
         zip -v9jo "$DISTNAME.zip" "$ARTIFACT"
         ;;
     *)
@@ -59,7 +50,7 @@ for BIN in $BINARIES; do
     printf "\n"
 done
 
-pushd ./coverage
+pushd ./coverage/html
 zip -v9r "$DISTDIR/chdiff-$(date -I)-coverage.zip" \
     ./* \
     -x *.lcov \
