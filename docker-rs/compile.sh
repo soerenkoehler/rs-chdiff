@@ -14,5 +14,6 @@ cargo build \
     --target aarch64-unknown-linux-gnu
 
 cp -r target/* /app/target
+chmod -R 777 /app/target
 
 popd
