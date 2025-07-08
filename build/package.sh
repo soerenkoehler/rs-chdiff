@@ -11,10 +11,11 @@ BINARIES=$(find ./target \
 mkdir -p $DISTDIR
 
 debug_perm() {
-    OBJ=$(readlink -e $1)
+    OBJ=$(readlink -e "$1")
     ls -ald "$OBJ"
-    if [[ "$OBJ" != "/" ]]; then
-        debug_perm $(dirname $OBJ)
+    PARENT=$(dirname "$OBJ")
+    if [[ "$OBJ" != "$PARENT" ]]; then
+        debug_perm "$PARENT"
     fi
 }
 
