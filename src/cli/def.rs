@@ -2,7 +2,12 @@ use clap::{Args, Parser, Subcommand, ValueEnum};
 use std::path::PathBuf;
 
 #[derive(Parser, Debug)]
-#[command(about, version, long_version = "Y", disable_version_flag = true)]
+#[command(
+    bin_name = "chdiff",
+    about,
+    version,
+    disable_version_flag = true
+)]
 pub struct Cli {
     #[command(subcommand)]
     pub cmd: Option<Command>,
