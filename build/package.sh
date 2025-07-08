@@ -10,8 +10,19 @@ BINARIES=$(find ./target \
 
 mkdir -p $DISTDIR
 
+debug_perm() {
+    OBJ=$(readlink -e $1)
+    ls -ald "$OBJ"
+    if [[ "$OBJ" != "/" ]]; then
+        debug_perm $(dirname $OBJ)
+    fi
+}
+
 for BIN in $BINARIES; do
     ARTIFACT=$(dirname $BIN)/$(sed $NAME_REPLACEMENT <<< $(basename $BIN))
+
+    debug_perm $BIN
+    debug_perm $ARTIFACT
 
     mv -v $BIN $ARTIFACT
 
@@ -34,12 +45,12 @@ for BIN in $BINARIES; do
 
     case $ARCH in
     *windows*)
-        zip -v9j "$DISTNAME.zip" "$ARTIFACT"
+        zip -v9jo "$DISTNAME.zip" "$ARTIFACT"
         ;;
     *)
         tar -cf "$DISTNAME.tar" \
             -C $(dirname "$ARTIFACT") $(basename $ARTIFACT)
-        gzip -v9 "$DISTNAME.tar"
+        gzip -fv9 "$DISTNAME.tar"
         ;;
     esac
 
