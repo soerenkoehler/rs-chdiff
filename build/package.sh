@@ -13,9 +13,6 @@ mkdir -p $DISTDIR
 for BIN in $BINARIES; do
     ARTIFACT=$(dirname $BIN)/$(sed $NAME_REPLACEMENT <<< $(basename $BIN))
 
-    debug_perm $BIN
-    debug_perm $ARTIFACT
-
     mv -v $BIN $ARTIFACT
 
     case $(basename $(dirname $(dirname $BIN))) in
