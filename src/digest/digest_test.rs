@@ -43,10 +43,17 @@ fn load_sha512() {
 }
 
 #[test]
-fn invalid_file_format() {
-    let digest = Digest::from_file(&get_path("tests/digest_data/invalid.txt")).unwrap_err();
+fn invalid_hash() {
+    let digest = Digest::from_file(&get_path("tests/digest_data/invalid_hash.txt")).unwrap_err();
     assert_eq!(digest.kind(), ErrorKind::Other);
     assert_eq!(digest.to_string(), "invalid digest line: x data/file.dat");
+}
+
+#[test]
+fn mixed_hash_size() {
+    let digest = Digest::from_file(&get_path("tests/digest_data/mixed_hash_size.txt")).unwrap_err();
+    assert_eq!(digest.kind(), ErrorKind::Other);
+    assert_eq!(digest.to_string(), "mixed hash sizes are not supported");
 }
 
 #[test]

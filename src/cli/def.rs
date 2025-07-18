@@ -2,12 +2,7 @@ use clap::{Args, Parser, Subcommand, ValueEnum};
 use std::path::PathBuf;
 
 #[derive(Parser, Debug)]
-#[command(
-    bin_name = "chdiff",
-    about,
-    version,
-    disable_version_flag = true
-)]
+#[command(bin_name = "chdiff", about, version, disable_version_flag = true)]
 pub struct Cli {
     #[command(subcommand)]
     pub cmd: Option<Command>,
@@ -25,7 +20,7 @@ pub enum Command {
     Backup(ArgsBackup),
 }
 
-#[derive(ValueEnum, Clone, Debug)]
+#[derive(ValueEnum, PartialEq, Clone, Debug)]
 pub enum HashAlgorithm {
     Sha256,
     Sha512,
