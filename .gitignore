@@ -1,5 +1,5 @@
-/dist
 /coverage
+/dist
 /generated
 /target
 *.zip
