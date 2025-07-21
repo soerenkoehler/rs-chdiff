@@ -1,15 +1,17 @@
 use std::path::Path;
 
+use clap::{CommandFactory, Error};
+
 use crate::{
-    Dependencies, cli::ArgsVerify, commands::CommandExecutor, digest::Digest, filescanner::FileList,
+    cli::{ArgsVerify, Cli}, commands::CommandExecutor, digest::Digest, filescanner::FileList, Dependencies
 };
 
 pub struct Verify {}
 
 impl CommandExecutor<ArgsVerify> for Verify {
-    fn execute(&self, deps: &Dependencies, args: ArgsVerify) {
-        println!("verify (wip) {:?}", args);
-        let _ = Digest::from_file(&args.path.join(Path::new(".chdiff.txt").to_path_buf()));
+    fn execute(&self, deps: &Dependencies, args: ArgsVerify) -> Result<(), Error> {
+        let _ = Digest::from_file(&args.path.join(Path::new(".chdiff.txt")));
+
         let mut files = match FileList::from_path(
             &args.path,
             &deps.config.exclude_absolute,
@@ -17,12 +19,14 @@ impl CommandExecutor<ArgsVerify> for Verify {
         ) {
             Ok(value) => value,
             Err(err) => {
-                eprintln!("error accessing {}: {} \n", args.path.display(), err);
-                return;
+                return Err(Cli::command().error(clap::error::ErrorKind::Io, err.to_string()));
             }
         }
         .entries;
         files.sort();
         files.iter().for_each(|x| println!("{}", x.display()));
+
+        // TODO call comparison
+        Ok(())
     }
 }

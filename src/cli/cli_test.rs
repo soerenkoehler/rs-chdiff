@@ -1,10 +1,12 @@
-use clap::error::ErrorKind;
+use clap::{crate_name, crate_version, error::ErrorKind};
+use predicates::{ord::eq, str::contains};
 use std::{ffi::OsString, path::PathBuf};
 
 use crate::{
-    Config, Dependencies,
+    CliErrorText, Config, Dependencies,
     cli::{ArgsBackup, ArgsCreate, ArgsVerify, parse},
     commands::MockCommandExecutor,
+    tests::{cli_data::*, runner::run_binary},
 };
 
 macro_rules! create_mock {
@@ -14,7 +16,7 @@ macro_rules! create_mock {
      $expected_func:expr) => {{
         let mut result = MockCommandExecutor::<$type>::new();
 
-        let expectation = result.expect_execute().return_const(());
+        let expectation = result.expect_execute().return_once(|_, _| Ok(()));
 
         if $name == $active {
             expectation.once().withf($expected_func);
@@ -85,13 +87,16 @@ macro_rules! test_parse_fail {
      $expected_err_text:expr
      $(,$arg:expr)* ) => {
         #[test]
-        // #[should_panic(expected=$expected_err_text)]
         fn $testname() {
-            let err = parse(create_dependencies!("unknown", ""),
+            match parse(create_dependencies!("unknown", ""),
                 vec![OsString::from("") $(, OsString::from($arg))*],
-            ).unwrap_err();
-            assert_eq!(err.kind(), $expected_err_kind);
-            assert_eq!(err.to_string(), $expected_err_text);
+            ) {
+                Err(err) => {
+                    assert_eq!(err.kind(), $expected_err_kind);
+                    assert!(err.to_string().starts_with(&$expected_err_text));
+                }
+                _ => panic!("should report error type Clap"),
+            }
         }
     };
 }
@@ -106,17 +111,94 @@ test_parse!(version, "version", "", "--version");
 test_parse_fail!(
     missing_command,
     ErrorKind::MissingSubcommand,
-    "error: command required\n\nUsage: chdiff [COMMAND]\n\nFor more information, try '--help'.\n"
+    CliErrorText!("error: command required")
 );
 test_parse_fail!(
     empty_command,
     ErrorKind::InvalidSubcommand,
-    "error: unrecognized subcommand ''\n\nUsage: chdiff [COMMAND]\n\nFor more information, try '--help'.\n",
+    CliErrorText!("error: unrecognized subcommand ''"),
     ""
 );
 test_parse_fail!(
     invalid_command,
     ErrorKind::InvalidSubcommand,
-    "error: unrecognized subcommand 'xxx'\n\nUsage: chdiff [COMMAND]\n\nFor more information, try '--help'.\n",
+    CliErrorText!("error: unrecognized subcommand 'xxx'"),
     "xxx"
 );
+
+#[test]
+fn help() {
+    run_binary(&["help"]).success().stdout(contains(HELP_TEXT));
+}
+
+#[test]
+fn help_backup() {
+    run_binary(&["help", "backup"])
+        .success()
+        .stdout(contains(HELP_TEXT_BACKUP));
+}
+
+#[test]
+fn help_b() {
+    run_binary(&["help", "b"])
+        .success()
+        .stdout(contains(HELP_TEXT_BACKUP));
+}
+
+#[test]
+fn help_b_flag() {
+    run_binary(&["b", "--help"])
+        .success()
+        .stdout(contains(HELP_TEXT_BACKUP));
+}
+
+#[test]
+fn help_create() {
+    run_binary(&["help", "create"])
+        .success()
+        .stdout(contains(HELP_TEXT_CREATE));
+}
+
+#[test]
+fn help_c() {
+    run_binary(&["help", "c"])
+        .success()
+        .stdout(contains(HELP_TEXT_CREATE));
+}
+
+#[test]
+fn help_c_flag() {
+    run_binary(&["c", "--help"])
+        .success()
+        .stdout(contains(HELP_TEXT_CREATE));
+}
+
+#[test]
+fn help_verify() {
+    run_binary(&["help", "verify"])
+        .success()
+        .stdout(contains(HELP_TEXT_VERIFY));
+}
+
+#[test]
+fn help_v() {
+    run_binary(&["help", "v"])
+        .success()
+        .stdout(contains(HELP_TEXT_VERIFY));
+}
+
+#[test]
+fn help_v_flag() {
+    run_binary(&["v", "--help"])
+        .success()
+        .stdout(contains(HELP_TEXT_VERIFY));
+}
+
+#[test]
+fn version_output() {
+    run_binary(&["--version"]).success().stdout(eq(format!(
+        "{} {}\n",
+        crate_name!(),
+        crate_version!()
+    )));
+}

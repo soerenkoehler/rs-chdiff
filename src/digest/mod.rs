@@ -1,7 +1,7 @@
 mod calculator;
 mod def;
 mod file;
-mod digest;
+mod builder;
 
 pub use def::Digest;
 

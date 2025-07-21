@@ -1,6 +1,6 @@
 use std::{
     fs::{canonicalize, read_dir},
-    io::Result,
+    io::{Error, Result},
     path::PathBuf,
     sync::mpsc::{Sender, channel},
     thread::{self},
@@ -19,11 +19,14 @@ impl FileList {
         exclude_relative: &PatternList,
     ) -> Result<Self> {
         // Create file list in terms of absolute paths.
-        let root_path = canonicalize(root_path)?;
+        let root_path = match canonicalize(root_path) {
+            Ok(path)=>path,
+            Err(err)=>return Err(Error::other(format!("{} {}", err, root_path.display()))),
+        };
 
         let (tx, rx) = channel();
 
-        Self::process_path(tx, &root_path);
+        Self::process_path(tx, &root_path)?;
 
         Ok(Self {
             entries: rx
@@ -40,25 +43,34 @@ impl FileList {
         })
     }
 
-    fn process_path(tx: Sender<PathBuf>, path: &PathBuf) {
+    fn process_path(tx: Sender<PathBuf>, path: &PathBuf) -> Result<()> {
         if path.is_dir() {
             match read_dir(path) {
-                Ok(dir_entries) => dir_entries
-                    .filter_map(Result::ok)
-                    .map(|entry| {
-                        let tx_clone: Sender<PathBuf> = tx.clone();
-                        thread::spawn(move || Self::process_path(tx_clone, &entry.path()))
-                    })
-                    .collect::<Vec<_>>()
-                    .into_iter()
-                    // TODO replace unwrap() with error handling
-                    .for_each(|thread| thread.join().unwrap_or_default()),
-                _ => eprintln!("error accessing {}", path.display()),
+                Err(err) => return Err(Error::other(format!("{} {}", err, path.display()))),
+                Ok(entries) => {
+                    if let Some(err) = entries
+                        .filter_map(Result::ok)
+                        .map(|entry| {
+                            let tx_clone: Sender<PathBuf> = tx.clone();
+                            thread::spawn(move || Self::process_path(tx_clone, &entry.path()))
+                        })
+                        .collect::<Vec<_>>()
+                        .into_iter()
+                        .filter_map(|thread| thread.join().unwrap_or(Ok(())).err())
+                        .next()
+                    {
+                        return Err(err);
+                    }
+                }
             }
         } else if path.is_file() {
             let _ = tx.send(path.to_path_buf());
         } else {
-            eprintln!("neither file nor directory: {}", path.display())
+            return Err(Error::other(format!(
+                "neither file nor directory: {}",
+                path.display()
+            )));
         }
+        Ok(())
     }
 }

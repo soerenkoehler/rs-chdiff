@@ -1,6 +1,5 @@
 use regex::Regex;
 use std::{
-    collections::HashMap,
     fs::OpenOptions,
     io::{BufRead, BufReader, Error},
     path::{Path, PathBuf},
@@ -13,13 +12,6 @@ pub static REGEX_DIGEST_LINE: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"^([0-9abcdefABCDEF]+)(\s\s|\s\*)(.+)$").unwrap());
 
 impl Digest {
-    pub fn new() -> Self {
-        Digest {
-            hash_algorithm: None,
-            entries: HashMap::from([]),
-        }
-    }
-
     pub fn from_file(file: &PathBuf) -> Result<Self, Error> {
         let mut digest = Self::new();
         let mut error = None;

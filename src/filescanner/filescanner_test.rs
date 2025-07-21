@@ -1,11 +1,16 @@
+use predicates::str::starts_with;
 use std::{
-    fs::OpenOptions,
+    fs::{self, OpenOptions},
     io::{BufRead, BufReader, ErrorKind},
     path::PathBuf,
     str::FromStr,
 };
 
-use crate::filescanner::{FileList, PatternList, pattern_test::to_patternlist};
+use crate::{
+    CliErrorText,
+    filescanner::{FileList, PatternList, pattern_test::to_patternlist},
+    tests::runner::run_binary,
+};
 
 macro_rules! to_absolute_pattern {
     ($p:expr) => {
@@ -27,7 +32,7 @@ fn non_existant_root_path() {
         &PatternList::new(),
         &PatternList::new(),
     ) {
-        Err(err) => assert_eq!(err.kind(), ErrorKind::NotFound),
+        Err(err) => assert_eq!(err.kind(), ErrorKind::Other),
         _ => panic!("should report non-rexistant root path"),
     };
 }
@@ -137,4 +142,36 @@ fn assert_filelist(expect_file: &str, exclude_absolute: &[&str], exclude_relativ
         (_, Some(Err(e))) => panic!("can't read expectation: {:?}", e),
         _ => false,
     } {}
+}
+
+#[test]
+fn error_output_on_bad_root_dir() {
+    let path = fs::canonicalize("./generated/filelist_test_baddir/data")
+        .unwrap()
+        .join("non-existant");
+    let path = path.to_str().unwrap();
+    let expected = CliErrorText!("error: No such file or directory (os error 2) {}", path);
+    run_binary(&["v", path]).failure().stderr(starts_with(expected));
+}
+
+#[test]
+fn error_output_on_bad_dir() {
+    let path = fs::canonicalize("./generated/filelist_test_baddir/data").unwrap();
+    let path = path.to_str().unwrap();
+    let expected = CliErrorText!(
+        "error: Permission denied (os error 13) {}/dir-unreachable",
+        path
+    );
+    run_binary(&["v", path]).failure().stderr(starts_with(expected));
+}
+
+#[test]
+fn error_output_on_bad_symlink() {
+    let path = fs::canonicalize("./generated/filelist_test_badsymlink/data").unwrap();
+    let path = path.to_str().unwrap();
+    let expected = CliErrorText!(
+        "error: neither file nor directory: {}/symlink-to-file1",
+        path
+    );
+    run_binary(&["v", path]).failure().stderr(starts_with(expected));
 }

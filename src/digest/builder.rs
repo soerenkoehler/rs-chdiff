@@ -1,11 +1,19 @@
 use std::{
     io::{Error, Result},
     path::PathBuf,
+    collections::HashMap,
 };
 
 use crate::{cli::HashAlgorithm, digest::Digest};
 
 impl Digest {
+    pub fn new() -> Self {
+        Digest {
+            hash_algorithm: None,
+            entries: HashMap::from([]),
+        }
+    }
+
     pub fn add(&mut self, path: PathBuf, hash: String) -> Result<()> {
         let new_algorithm = match hash.len() {
             64 => &HashAlgorithm::Sha256,
@@ -26,7 +34,7 @@ impl Digest {
             _ => (),
         }
 
-        if self.entries.get(&path).is_some() {
+        if self.entries.contains_key(&path) {
             return Err(Error::other(format!(
                 "hash already defined for path {}",
                 path.display()
