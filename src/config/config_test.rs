@@ -1,18 +1,56 @@
 use glob::Pattern;
+use predicates::str::{contains, starts_with};
 use std::{
     env,
+    fs::{self, Permissions},
     io::ErrorKind,
     path::{Path, PathBuf},
     str::FromStr,
 };
 
 use crate::{
+    CliErrorText,
     config::{
         Config,
         def::{CONFIG_FILE, ENV_HOME},
     },
     filescanner::pattern_test::to_patternlist,
+    tests::runner::run_in_dir,
 };
+
+#[test]
+fn cant_create_default_config_file() {
+    fn set_readonly(path: &PathBuf, readonly: bool) {
+        let mut permissions: Permissions = fs::metadata(&path).unwrap().permissions();
+        permissions.set_readonly(readonly);
+        fs::set_permissions(&path, permissions).unwrap();
+    }
+
+    let cwd = tempfile::tempdir().unwrap().into_path();
+
+    // provoke error by making cwd readonly
+    set_readonly(&cwd, true);
+
+    run_in_dir(&cwd, &["v"])
+        .failure()
+        .stderr(starts_with(CliErrorText!(
+            "error: Permission denied (os error 13) {}/.chdiff-config.json",
+            cwd.display()
+        )));
+
+    // reset readonly flag on cwd
+    set_readonly(&cwd, false);
+}
+
+#[test]
+fn missing_config_file() {
+    let cwd = tempfile::tempdir().unwrap().into_path();
+    let expect = format!(
+        "created default config file: {}",
+        Path::join(&cwd, ".chdiff-config.json").to_str().unwrap()
+    );
+    run_in_dir(&cwd, &["v"]).success().stdout(contains(expect));
+}
 
 #[test]
 fn get_config_path() {

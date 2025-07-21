@@ -4,15 +4,19 @@ mod config;
 mod digest;
 mod filescanner;
 
+#[cfg(test)]
+mod tests;
+
+use clap::CommandFactory;
 use std::{env::args_os, ffi::OsString};
 
 use crate::{
-    cli::{ArgsBackup, ArgsCreate, ArgsVerify},
+    cli::{ArgsBackup, ArgsCreate, ArgsVerify, Cli},
     commands::{CommandExecutor, backup::Backup, create::Create, verify::Verify, version::Version},
     config::Config,
 };
 
-struct Dependencies {
+pub struct Dependencies {
     backup: Box<dyn CommandExecutor<ArgsBackup>>,
     create: Box<dyn CommandExecutor<ArgsCreate>>,
     verify: Box<dyn CommandExecutor<ArgsVerify>>,
@@ -21,21 +25,23 @@ struct Dependencies {
 }
 
 pub fn main() {
-    match Config::from_file(&Config::get_config_path()) {
-        Ok(cfg) => {
-            if let Err(err) = cli::parse(
-                &Dependencies {
-                    backup: Box::new(Backup {}),
-                    create: Box::new(Create {}),
-                    verify: Box::new(Verify {}),
-                    version: Box::new(Version {}),
-                    config: cfg,
-                },
-                args_os().collect::<Vec<OsString>>(),
-            ) {
-                err.exit();
-            }
-        }
-        Err(err) => eprintln!("reading config file: {}", err),
+    let config_file = &Config::get_config_path();
+    if let Err(err) = match Config::from_file(config_file) {
+        Ok(cfg) => cli::parse(
+            &Dependencies {
+                backup: Box::new(Backup {}),
+                create: Box::new(Create {}),
+                verify: Box::new(Verify {}),
+                version: Box::new(Version {}),
+                config: cfg,
+            },
+            args_os().collect::<Vec<OsString>>(),
+        ),
+        Err(err) => Err(Cli::command().error(
+            clap::error::ErrorKind::Io,
+            format!("{} {}", err, config_file.display()),
+        )),
+    } {
+        err.exit();
     }
 }

@@ -1,6 +1,5 @@
 use regex::Regex;
 use std::{
-    collections::HashMap,
     fs::OpenOptions,
     io::{BufRead, BufReader, Error},
     path::{Path, PathBuf},
@@ -13,26 +12,26 @@ pub static REGEX_DIGEST_LINE: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"^([0-9abcdefABCDEF]+)(\s\s|\s\*)(.+)$").unwrap());
 
 impl Digest {
-    pub fn new() -> Self {
-        Digest {
-            entries: HashMap::from([]),
-        }
-    }
-
     pub fn from_file(file: &PathBuf) -> Result<Self, Error> {
         let mut digest = Self::new();
-        let mut last_error = None;
+        let mut error = None;
 
         BufReader::new(OpenOptions::new().read(true).open(file)?)
             .lines()
-            .for_each(|line| match Self::entry_from_line(line.unwrap()) {
-                Ok((path, hash)) => {
-                    digest.entries.insert(path, hash);
-                }
-                Err(err) => last_error = Some(err),
+            .for_each(|line| {
+                if let Some(err) = match line {
+                    Ok(line) => match Self::entry_from_line(line) {
+                        Ok((path, hash)) => digest.add(path, hash).err(),
+                        Err(err) => Some(err),
+                    },
+                    Err(err) => Some(err),
+                } {
+                    error.get_or_insert(err);
+                };
             });
 
-        match last_error {
+        match error {
+            // TODO Is it possible to wrap errors?
             Some(err) => Err(err),
             _ => Ok(digest),
         }
