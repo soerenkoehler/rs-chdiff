@@ -16,7 +16,7 @@
 
 A checksum based diff and backup tool.
 
-Lorem ipsum
+Lorem ipsum.
 
 ----
 
