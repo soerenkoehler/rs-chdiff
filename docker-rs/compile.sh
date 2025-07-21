@@ -13,7 +13,14 @@ cargo build \
     --target armv7-unknown-linux-gnueabi \
     --target aarch64-unknown-linux-gnu
 
-cp -r target/release /app/target/
-chmod -R 777 /app/target/release
+pushd target
 
+for SRC in $(find . -type d -path "*/release"); do
+    DST="/app/target/$SRC"
+    mkdir -p "$DST"
+    cp -R "$SRC" "$DST"
+    chmod -R 777 "$DST"
+done
+
+popd
 popd
