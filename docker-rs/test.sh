@@ -29,6 +29,9 @@ rm -rf "$COVERAGE_DIR"
 mkdir -p "$PROFRAW_DIR"
 mkdir -p "$HTML_TEMP_DIR"
 
+# build debug binary for execution by tests
+cargo b
+# run tests
 TEST_OUTPUT=$(cargo t --jobs 1 --message-format=json)
 
 if [[ $? != 0 ]]; then
