@@ -8,7 +8,7 @@ mod filescanner;
 mod tests;
 
 use clap::CommandFactory;
-use std::{env::args_os, ffi::OsString, process::exit};
+use std::{env::args_os, ffi::OsString};
 
 use crate::{
     cli::{ArgsBackup, ArgsCreate, ArgsVerify, Cli},
@@ -39,7 +39,7 @@ pub fn main() {
         ),
         Err(err) => Err(Cli::command().error(
             clap::error::ErrorKind::Io,
-            format!("{} {}", err.to_string(), config_file.display()),
+            format!("{} {}", err, config_file.display()),
         )),
     } {
         err.exit();
