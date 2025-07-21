@@ -27,11 +27,10 @@ impl Digest {
                     Err(err) => Some(err),
                 } {
                     error.get_or_insert(err);
-                };
+                }
             });
 
         match error {
-            // TODO Is it possible to wrap errors?
             Some(err) => Err(err),
             _ => Ok(digest),
         }
