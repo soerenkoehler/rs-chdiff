@@ -1,4 +1,4 @@
-name: rs-chdiff build main
+name: rs-chdiff main
 
 on:
   push:

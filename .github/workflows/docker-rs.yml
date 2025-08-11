@@ -1,4 +1,4 @@
-name: create rs-chdiff build tools
+name: docker tools
 
 on:
   push:
