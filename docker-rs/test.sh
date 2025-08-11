@@ -52,10 +52,6 @@ EXCEPTIONS=$(
     | xargs -I {} printf "%s=%s " "-ignore-filename-regex" "{}"
 )
 
-printf "DEBUG: EXCEPTIONS=%s\n" "$EXCEPTIONS"
-
-cat .llvm-cov-ignore
-
 llvm-profdata merge \
     -sparse "$PROFRAW_DIR"/* \
     -o "$PROFDATA_FILE"
@@ -67,7 +63,6 @@ llvm-cov export \
     $EXCEPTIONS \
     $OBJECTS \
     >"$REPORT_TEMP_FILE"
-    # -path-equivalence=/app/work,. \
 
 llvm-cov show \
     -format=html \
