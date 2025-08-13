@@ -8,7 +8,6 @@ use std::{
 
 use super::PatternList;
 
-#[derive(Debug)]
 pub struct FileList {
     pub entries: Vec<PathBuf>,
     pub errors: Vec<Error>,
@@ -80,7 +79,7 @@ impl FileList {
                 let thread_error_count = entries
                     .filter_map(Result::ok)
                     .map(|entry| {
-                        let tx_clone=tx.clone();
+                        let tx_clone = tx.clone();
                         thread::spawn(move || Self::process_path(tx_clone, &entry.path()))
                     })
                     .collect::<Vec<_>>()
@@ -95,7 +94,7 @@ impl FileList {
                     )
                 }
             }
-            Err(err) => send_error(tx, err),
+            Err(err) => send_error(tx, Error::other(format!("{} {}", err, dir.display()))),
         };
     }
 }

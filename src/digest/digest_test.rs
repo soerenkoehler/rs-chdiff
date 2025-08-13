@@ -48,17 +48,6 @@ test_error!(
     "hash already defined for path data/file1.dat"
 );
 
-test_error!(
-    file_not_readable,
-    "tests/digest_data/non-existing.txt",
-    ErrorKind::NotFound,
-    "No such file or directory (os error 2)"
-);
-
-fn get_path(file: &str) -> PathBuf {
-    PathBuf::from_str(file).unwrap()
-}
-
 macro_rules! test_hash {
     ($name:ident,$input:expr $(,$path:expr,$hash:expr)*) => {
         #[test]
@@ -95,4 +84,14 @@ test_hash!(
 fn new_digest() {
     let digest = Digest::new();
     assert_eq!(digest.entries, HashMap::from([]));
+}
+
+#[test]
+fn missing_file_yields_empty_digest() {
+    let digest = Digest::from_file(&get_path("tests/digest_data/non-existing.txt")).unwrap();
+    assert_eq!(digest.entries, HashMap::from([]));
+}
+
+fn get_path(file: &str) -> PathBuf {
+    PathBuf::from_str(file).unwrap()
 }

@@ -1,7 +1,7 @@
 use regex::Regex;
 use std::{
     fs::OpenOptions,
-    io::{BufRead, BufReader, Error},
+    io::{BufRead, BufReader, Error, ErrorKind},
     path::{Path, PathBuf},
     sync::LazyLock,
 };
@@ -9,34 +9,32 @@ use std::{
 use crate::digest::def::Digest;
 
 pub static REGEX_DIGEST_LINE: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"^([0-9abcdefABCDEF]+)(\s\s|\s\*)(.+)$").unwrap());
+    LazyLock::new(|| Regex::new(r"^([0-9a-fA-F]+)(\s\s|\s\*)(.+)$").unwrap());
 
 impl Digest {
     pub fn from_file(file: &PathBuf) -> Result<Self, Error> {
-        let mut digest = Self::new();
-        let mut error = None;
-
-        BufReader::new(OpenOptions::new().read(true).open(file)?)
-            .lines()
-            .for_each(|line| {
-                if let Some(err) = match line {
-                    Ok(line) => match Self::entry_from_line(line) {
+        match OpenOptions::new().read(true).open(file) {
+            Ok(input) => {
+                let mut digest = Self::new();
+                match BufReader::new(input)
+                    .lines()
+                    .filter_map(|raw_line| match Self::entry_from_line(raw_line) {
                         Ok((path, hash)) => digest.add(path, hash).err(),
                         Err(err) => Some(err),
-                    },
-                    Err(err) => Some(err),
-                } {
-                    error.get_or_insert(err);
+                    })
+                    .last()
+                {
+                    Some(err) => Err(err),
+                    _ => Ok(digest),
                 }
-            });
-
-        match error {
-            Some(err) => Err(err),
-            _ => Ok(digest),
+            }
+            Err(err) if err.kind() == ErrorKind::NotFound => Ok(Self::new()),
+            Err(err) => Err(err),
         }
     }
 
-    fn entry_from_line(line: String) -> Result<(PathBuf, String), Error> {
+    fn entry_from_line(raw_line: Result<String, Error>) -> Result<(PathBuf, String), Error> {
+        let line = raw_line?;
         match REGEX_DIGEST_LINE.captures(&line) {
             Some(captured) => {
                 let (_, [hash, _, path]) = captured.extract();

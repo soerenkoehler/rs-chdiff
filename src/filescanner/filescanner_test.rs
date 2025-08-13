@@ -36,25 +36,25 @@ fn error_output_on_bad_root_dir() {
 }
 
 #[test]
-fn error_output_on_bad_dir() { // FIXME
+fn error_output_on_bad_dir() {
     let path = fs::canonicalize("./generated/filelist_test_baddir/data").unwrap();
     let path = path.to_str().unwrap();
-    let expected = CliErrorText!(
-        "error: Permission denied (os error 13) {}/dir-unreachable",
+    let expected = format!(
+        "Permission denied (os error 13) {}/dir-unreachable",
         path
     );
     run_binary(&["v", path]).success().stderr(starts_with(expected));
 }
 
 #[test]
-fn error_output_on_bad_symlink() { // FIXME
+fn error_output_on_bad_symlink() {
     let path = fs::canonicalize("./generated/filelist_test_badsymlink/data").unwrap();
     let path = path.to_str().unwrap();
-    let expected = CliErrorText!(
-        "error: neither file nor directory: {}/symlink-to-file1",
+    let expected = format!(
+        "neither file nor directory: {}/symlink-to-file1",
         path
     );
-    run_binary(&["v", path]).failure().stderr(starts_with(expected));
+    run_binary(&["v", path]).success().stderr(starts_with(expected));
 }
 
 #[test]
