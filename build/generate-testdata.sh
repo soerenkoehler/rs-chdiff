@@ -72,17 +72,20 @@ config_test_unwritable_file() {
 }
 
 digest_test() {
-    create_file empty.dat 0
-    printf "content of first file" >file1.dat
-    printf "content of second file" >file2.dat
+    # create_file empty.dat 0
+    # printf "content of first file" >file1.dat
+    # printf "content of second file" >file2.dat
 
     cd ..
-    truncate -s 0 sha256.txt
-    truncate -s 0 sha512.txt
-    for FILE in $(find data -type f); do
-        sha256sum $FILE >>sha256.txt
-        sha512sum $FILE >>sha512.txt
-    done
+    # truncate -s 0 sha256.txt
+    # truncate -s 0 sha512.txt
+    # for FILE in $(find data -type f); do
+    #     sha256sum $FILE >>sha256.txt
+    #     sha512sum $FILE >>sha512.txt
+    # done
+
+    truncate -s 0 unreadable.txt
+    chmod 000 unreadable.txt
 }
 
 if [[ ! -e Cargo.toml ]]; then

@@ -76,7 +76,7 @@ impl FileList {
     fn process_dir(tx: FileListSender, dir: &PathBuf) {
         match read_dir(dir) {
             Ok(entries) => {
-                let thread_error_count = entries
+                entries
                     .filter_map(Result::ok)
                     .map(|entry| {
                         let tx_clone = tx.clone();
@@ -84,15 +84,7 @@ impl FileList {
                     })
                     .collect::<Vec<_>>()
                     .into_iter()
-                    .filter_map(|thread| thread.join().err())
-                    .count();
-                if thread_error_count > 0 {
-                    // TODO probably no coverage possible (can't reliably provoke join errors)
-                    send_error(
-                        tx,
-                        Error::other(format!("could not join {} threads", thread_error_count)),
-                    )
-                }
+                    .for_each(|thread| thread.join().unwrap());
             }
             Err(err) => send_error(tx, Error::other(format!("{} {}", err, dir.display()))),
         };

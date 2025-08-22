@@ -14,6 +14,13 @@ macro_rules! test_error {
 }
 
 test_error!(
+    nonaccessible_file_yields_error,
+    "generated/digest_test/unreadable.txt",
+    ErrorKind::PermissionDenied,
+    "Permission denied (os error 13)"
+);
+
+test_error!(
     bad_utf8,
     "tests/digest_data/bad_utf8.txt",
     ErrorKind::InvalidData,
